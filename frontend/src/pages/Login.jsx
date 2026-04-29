@@ -70,7 +70,7 @@ const Login = () => {
             onChange={(e) => setFormData({...formData, password: e.target.value})}
             required
           />
-          {!isLogin && <p className="text-[10px] text-on-background/40 mt-1">Min 6 chars, must include uppercase, lowercase, and a number</p>}
+          {!isLogin && <p className="text-[10px] text-on-background/40 mt-1">Min 6 characters</p>}
         </div>
 
         {error && <p className="text-primary text-xs font-bold uppercase">{error}</p>}
