@@ -172,8 +172,9 @@ const Practice = () => {
     <div className="h-screen w-full flex bg-background overflow-hidden font-sans text-on-background selection:bg-primary/20">
       <SEO
         title="Nepali Typing Practice — Learn Preeti & Unicode | VEG"
-        description="Guided Nepali typing lessons with progressive difficulty."
+        description="Learn Nepali typing step-by-step with guided lessons for Preeti, Unicode, and English layouts. Progressive difficulty, finger guides, XP system, and real-time accuracy feedback."
         path="/practice"
+        keywords="Nepali typing lessons, Preeti keyboard practice, learn Unicode typing, typing finger guide, टाइपिङ अभ्यास"
       />
 
       <aside className="w-80 border-r border-outline/5 bg-white/5 p-8 flex flex-col gap-12">

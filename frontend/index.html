@@ -2,9 +2,6 @@
 <html lang="ne">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="canonical" href="https://vegtypewriter.com/" />
@@ -151,19 +148,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 
-    <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(registrations => {
-          for(let registration of registrations) {
-            registration.unregister();
-          }
-        });
-      }
-    </script>
-    <script>
-      // Force clear cache and refresh if needed
-      console.log("Service Worker Unregistered / Disabled for Development");
-    </script>
+
   </head>
   <body>
     <!-- Noscript fallback for SEO crawlers -->

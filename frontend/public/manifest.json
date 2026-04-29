@@ -1,15 +1,37 @@
 {
   "short_name": "VEG Typing",
-  "name": "VEG | Nepali Typing Platform",
+  "name": "VEG — Free Nepali Typing Test | Preeti & Unicode",
+  "description": "Nepal's #1 free online typing test. Practice Preeti, Unicode, and Romanized Nepali typing with real-time WPM tracking and multiplayer races.",
+  "lang": "ne",
   "icons": [
     {
       "src": "favicon.svg",
       "sizes": "any",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "orientation": "portrait-primary",
+  "theme_color": "#0a0a0a",
+  "background_color": "#0a0a0a",
+  "categories": ["education", "productivity", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Start Typing Test",
+      "url": "/",
+      "description": "Jump straight into a typing test"
+    },
+    {
+      "name": "Practice Lessons",
+      "url": "/practice",
+      "description": "Guided Nepali typing lessons"
+    },
+    {
+      "name": "Leaderboard",
+      "url": "/leaderboard",
+      "description": "See top typists"
+    }
+  ]
 }
