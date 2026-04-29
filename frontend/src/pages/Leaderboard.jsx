@@ -12,20 +12,42 @@ const Leaderboard = () => {
   const [duration, setDuration] = useState(30);
   const [timeframe, setTimeframe] = useState('alltime');
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchLeaderboard();
+    setPage(1);
+    setLeaderboard([]);
+    fetchLeaderboard(1, true);
   }, [language, duration, timeframe]);
 
-  const fetchLeaderboard = async () => {
+  const fetchLeaderboard = async (pageNum = page, reset = false) => {
     setLoading(true);
+    setError(null);
     try {
-      const response = await api.get(`/leaderboard?language=${language}&duration=${duration}&timeframe=${timeframe}`);
-      setLeaderboard(response.data);
+      const response = await api.get(`/leaderboard?language=${language}&duration=${duration}&timeframe=${timeframe}&page=${pageNum}&limit=50`);
+      const newData = response.data.results || response.data;
+      
+      if (reset) {
+        setLeaderboard(newData);
+      } else {
+        setLeaderboard(prev => [...prev, ...newData]);
+      }
+      
+      setHasMore(response.data.pagination?.hasMore || false);
+      setPage(pageNum);
     } catch (error) {
       console.error('Failed to fetch leaderboard:', error);
+      setError('Failed to load leaderboard. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadMore = () => {
+    if (!loading && hasMore) {
+      fetchLeaderboard(page + 1, false);
     }
   };
 
@@ -114,7 +136,7 @@ const Leaderboard = () => {
         </div>
       </header>
 
-      {loading ? (
+      {loading && page === 1 ? (
         <div className="flex flex-col items-center justify-center py-32 gap-6">
           <motion.div 
             animate={{ rotate: 360 }}
@@ -248,13 +270,49 @@ const Leaderboard = () => {
                 </motion.div>
               );
             })}
-              {leaderboard.length === 0 && (
+              {leaderboard.length === 0 && !loading && (
                 <div className="p-32 text-center">
                   <p className="text-on-background/20 font-mono text-[10px] uppercase tracking-[0.4em]">No competitive data in current matrix</p>
                 </div>
               )}
             </div>
+            
+            {/* Load More Button */}
+            {hasMore && !loading && leaderboard.length > 0 && (
+              <div className="p-8 flex justify-center border-t border-outline/10">
+                <button
+                  onClick={loadMore}
+                  className="px-8 py-4 bg-primary/10 hover:bg-primary/20 text-primary font-black text-[10px] uppercase tracking-widest transition-colors"
+                >
+                  Load More Competitors
+                </button>
+              </div>
+            )}
+            
+            {/* Loading More Indicator */}
+            {loading && page > 1 && (
+              <div className="p-8 flex justify-center border-t border-outline/10">
+                <motion.div 
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full"
+                />
+              </div>
+            )}
           </motion.div>
+          
+          {/* Error Message */}
+          {error && (
+            <div className="mt-8 p-6 bg-error/10 border border-error/20 text-center">
+              <p className="text-error font-bold text-sm">{error}</p>
+              <button
+                onClick={() => fetchLeaderboard(1, true)}
+                className="mt-4 px-6 py-2 bg-error/20 hover:bg-error/30 text-error font-black text-[10px] uppercase tracking-widest transition-colors"
+              >
+                Retry
+              </button>
+            </div>
+          )}
         </>
       )}
     </motion.div>

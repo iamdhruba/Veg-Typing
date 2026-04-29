@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { format } from 'date-fns';
@@ -13,20 +13,42 @@ const Stats = () => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [heatmapMode, setHeatmapMode] = useState('english');
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const { data } = await api.get('/results/me');
-        setResults(data);
-      } catch (error) {
-        console.error('Failed to fetch stats:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchStats();
   }, []);
+
+  const fetchStats = async (pageNum = 1, reset = false) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await api.get(`/results/me?page=${pageNum}&limit=100`);
+      const newResults = data.results || data;
+      
+      if (reset) {
+        setResults(newResults);
+      } else {
+        setResults(prev => [...prev, ...newResults]);
+      }
+      
+      setHasMore(data.pagination?.hasMore || false);
+      setPage(pageNum);
+    } catch (error) {
+      console.error('Failed to fetch stats:', error);
+      setError('Failed to load statistics. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadMore = () => {
+    if (!loading && hasMore) {
+      fetchStats(page + 1, false);
+    }
+  };
 
   const containerVars = {
     hidden: { opacity: 0 },
@@ -43,7 +65,7 @@ const Stats = () => {
 
   const { achievements, unlockedCount } = useAchievements(results);
 
-  if (loading) return (
+  if (loading && page === 1) return (
     <div className="flex flex-col items-center justify-center py-32 gap-6">
       <motion.div 
         animate={{ rotate: 360 }}
@@ -339,7 +361,40 @@ const Stats = () => {
             </motion.div>
           ))}
         </div>
+        
+        {hasMore && !loading && results.length > 0 && (
+          <div className="p-8 flex justify-center border-t border-outline/10">
+            <button
+              onClick={loadMore}
+              className="px-8 py-4 bg-primary/10 hover:bg-primary/20 text-primary font-black text-[10px] uppercase tracking-widest transition-colors"
+            >
+              Load More Sessions
+            </button>
+          </div>
+        )}
+        
+        {loading && page > 1 && (
+          <div className="p-8 flex justify-center border-t border-outline/10">
+            <motion.div 
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full"
+            />
+          </div>
+        )}
       </motion.div>
+      
+      {error && (
+        <div className="mt-8 p-6 bg-error/10 border border-error/20 text-center">
+          <p className="text-error font-bold text-sm">{error}</p>
+          <button
+            onClick={() => fetchStats(1, true)}
+            className="mt-4 px-6 py-2 bg-error/20 hover:bg-error/30 text-error font-black text-[10px] uppercase tracking-widest transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      )}
     </motion.div>
   );
 };

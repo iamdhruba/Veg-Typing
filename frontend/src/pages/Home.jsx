@@ -28,16 +28,23 @@ const Home = () => {
 
   useEffect(() => {
     const loadWords = async () => {
-      if (mode === 'custom' && customText) {
-        setWords(customText.trim().split(/\s+/));
-      } else if (mode === 'ai') {
-        try {
-          const { data } = await api.get('/results/me');
-          setWords(getPersonalizedWords(language, data, 100));
-        } catch (e) {
-          setWords(getRandomWords(language, 100));
+      try {
+        if (mode === 'custom' && customText) {
+          setWords(customText.trim().split(/\s+/));
+        } else if (mode === 'ai') {
+          try {
+            const { data } = await api.get('/results/me?page=1&limit=20');
+            const resultsData = data.results || data;
+            setWords(getPersonalizedWords(language, resultsData, 100));
+          } catch (e) {
+            setWords(getRandomWords(language, 100));
+          }
+        } else {
+          setWords(getRandomWords(language, 500));
         }
-      } else {
+      } catch (error) {
+        console.error('Error loading words:', error);
+        toast.error('Failed to load words. Using default set.');
         setWords(getRandomWords(language, 500));
       }
     };
@@ -104,6 +111,14 @@ const Home = () => {
         });
       } catch (error) {
         console.error('Failed to save result:', error);
+        toast.error('Failed to save result. Please check your connection.', {
+          style: {
+            background: 'var(--surface)',
+            color: 'var(--error)',
+            border: '1px solid var(--error)',
+            borderRadius: '0px'
+          }
+        });
       }
     }
   };
