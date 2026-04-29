@@ -13,7 +13,8 @@ const port = process.env.PORT || 5000;
 const ALLOWED_ORIGINS = [
   'http://localhost:5173',
   'http://localhost:4173',
-  process.env.FRONTEND_URL, // for production
+  'https://veg-typing.vercel.app',
+  process.env.FRONTEND_URL,
 ].filter(Boolean);
 
 connectDB();
