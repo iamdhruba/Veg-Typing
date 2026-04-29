@@ -65,21 +65,6 @@ const Stats = () => {
 
   const { achievements, unlockedCount } = useAchievements(results);
 
-  // Check if user is logged in
-  if (!user) {
-    return (
-      <div className="flex flex-col items-center justify-center py-32 gap-6">
-        <p className="text-2xl font-black text-on-background/60">Please log in to view your stats</p>
-        <a 
-          href="/login" 
-          className="px-8 py-4 bg-primary text-on-primary font-black text-[10px] uppercase tracking-widest hover:bg-primary/90 transition-colors"
-        >
-          Go to Login
-        </a>
-      </div>
-    );
-  }
-
   if (loading && page === 1) return (
     <div className="flex flex-col items-center justify-center py-32 gap-6">
       <motion.div 
@@ -94,6 +79,21 @@ const Stats = () => {
   const bestWpm = results.length > 0 ? Math.max(...results.map(r => r.wpm)) : 0;
   const avgWpm = results.length > 0 ? Math.round(results.reduce((acc, r) => acc + r.wpm, 0) / results.length) : 0;
   const avgAcc = results.length > 0 ? Math.round(results.reduce((acc, r) => acc + r.accuracy, 0) / results.length) : 0;
+
+  // Check if user is logged in (after all hooks)
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center py-32 gap-6">
+        <p className="text-2xl font-black text-on-background/60">Please log in to view your stats</p>
+        <a 
+          href="/login" 
+          className="px-8 py-4 bg-primary text-on-primary font-black text-[10px] uppercase tracking-widest hover:bg-primary/90 transition-colors"
+        >
+          Go to Login
+        </a>
+      </div>
+    );
+  }
 
   const handleExportCSV = () => {
     if (results.length === 0) return;
