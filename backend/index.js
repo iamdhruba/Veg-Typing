@@ -61,19 +61,7 @@ app.use('/api/leaderboard', require('./routes/leaderboard.js'));
 // Socket.io
 require('./socketHandlers')(io);
 
-// Serve frontend in production
-if (process.env.NODE_ENV === 'production') {
-  const path = require('path');
-  app.use(express.static(path.join(__dirname, '../frontend/dist')));
-
-  app.get('/{*path}', (req, res) =>
-    res.sendFile(
-      path.resolve(__dirname, '../', 'frontend', 'dist', 'index.html')
-    )
-  );
-} else {
-  app.get('/', (req, res) => res.send('API is running...'));
-}
+app.get('/', (req, res) => res.send('API is running...'));
 
 // Global error handler
 app.use((err, req, res, next) => {
