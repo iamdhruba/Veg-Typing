@@ -1,20 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { romanToUnicode } from "../utils/romanizedMap";
-
-const splitGraphemes = (text, language) => {
-  if (language === 'preeti') {
-    // Group known multi-key Preeti characters into single visual units
-    const combos = /sf\[|sf\]|s\[|s\]|sf|sl|sL|s'|s\"|sF|s\+|sM|s\{|s\\|c\+|cM|cf\]|cf\}|P\]|O\{|b\[|cf|pm|em|km|0f|if|If|Qm|qm|./g;
-    return text.match(combos) || [];
-  }
-  
-  // For Unicode Nepali
-  if (Intl.Segmenter) {
-    const segmenter = new Intl.Segmenter('ne', { granularity: 'grapheme' });
-    return Array.from(segmenter.segment(text)).map(s => s.segment);
-  }
-  return text.match(/[\u0900-\u097F][\u093E-\u094D\u0901-\u0903\u0951-\u0957\u0962-\u0963]*|./gu) || text.split('');
-};
+import { splitGraphemes } from "../utils/graphemeUtils";
 
 export function useTypingEngine({ words, mode, duration, language, socket, roomId }) {
   const [typedHistory, setTypedHistory] = useState([]);   

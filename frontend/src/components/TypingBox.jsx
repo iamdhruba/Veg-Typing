@@ -1,27 +1,11 @@
-import React, { useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useEffect, useCallback, useMemo } from 'react';
 import { useTypingEngine } from '../hooks/useTypingEngine';
 import { usePreetiInput } from '../hooks/usePreetiInput';
 import { useTypingStore } from '../store/useTypingStore';
 import { playTypewriterClick, playTypewriterDing } from '../utils/sound';
+import { splitGraphemes } from '../utils/graphemeUtils';
 import Caret from './Caret';
 import VirtualKeyboard from './practice/VirtualKeyboard';
-
-const splitGraphemes = (text, lang) => {
-  if (lang === 'preeti') {
-    // Group known multi-key Preeti characters into single visual units
-    // to prevent span boundary kerning issues (e.g. 'If' -> 'क्ष', 'pm' -> 'ऊ')
-    const combos = /sf\[|sf\]|s\[|s\]|sf|sl|sL|s'|s\"|sF|s\+|sM|s\{|s\\|c\+|cM|cf\]|cf\}|P\]|O\{|b\[|cf|pm|em|km|0f|if|If|Qm|qm|./g;
-    return text.match(combos) || [];
-  }
-  
-  // For Unicode Nepali, use grapheme segmentation
-  if (Intl.Segmenter) {
-    const segmenter = new Intl.Segmenter('ne', { granularity: 'grapheme' });
-    return Array.from(segmenter.segment(text)).map(s => s.segment);
-  }
-  // Fallback for older browsers
-  return text.match(/[\u0900-\u097F][\u093E-\u094D\u0901-\u0903\u0951-\u0957\u0962-\u0963]*|./gu) || text.split('');
-};
 
 const TypingBox = ({ words, mode, duration, language, onFinish, pbWpm = 0, socket, roomId }) => {
   const {
@@ -41,7 +25,7 @@ const TypingBox = ({ words, mode, duration, language, onFinish, pbWpm = 0, socke
 
   const [ghostIdx, setGhostIdx] = React.useState(0);
   
-  // Ghost logic
+  // Ghost logic - reduced update frequency
   useEffect(() => {
     if (!startTime || !pbWpm || isFinished) {
       setGhostIdx(0);
@@ -50,12 +34,12 @@ const TypingBox = ({ words, mode, duration, language, onFinish, pbWpm = 0, socke
 
     const interval = setInterval(() => {
       const elapsedMinutes = (Date.now() - startTime) / 60000;
-      const ghostProgress = pbWpm * 5 * elapsedMinutes; // Average 5 chars per word
+      const ghostProgress = pbWpm * 5 * elapsedMinutes;
       const totalChars = words.join(' ').length;
       const wordProgress = (ghostProgress / totalChars) * words.length;
       
       setGhostIdx(Math.min(words.length, wordProgress));
-    }, 100);
+    }, 500); // Reduced from 100ms to 500ms
 
     return () => clearInterval(interval);
   }, [startTime, pbWpm, words, isFinished]);
@@ -115,9 +99,16 @@ const TypingBox = ({ words, mode, duration, language, onFinish, pbWpm = 0, socke
     inputRef.current?.focus();
   };
 
-  const memoizedWords = React.useMemo(() => {
+  const memoizedWords = useMemo(() => {
     return words.map(word => splitGraphemes(word, language));
   }, [words, language]);
+
+  // Only render visible words (windowing)
+  const visibleRange = useMemo(() => {
+    const start = Math.max(0, currentWordIdx - 20);
+    const end = Math.min(words.length, currentWordIdx + 80);
+    return { start, end };
+  }, [currentWordIdx, words.length]);
 
   return (
     <div className="w-full max-w-5xl mx-auto" onClick={focusInput}>
@@ -151,7 +142,8 @@ const TypingBox = ({ words, mode, duration, language, onFinish, pbWpm = 0, socke
           className="flex flex-wrap gap-x-4 scroll-smooth transition-all duration-300"
           style={{ maxHeight: '100%', overflowY: 'hidden' }}
         >
-          {words.map((word, wIdx) => {
+          {words.slice(visibleRange.start, visibleRange.end).map((word, relIdx) => {
+            const wIdx = visibleRange.start + relIdx;
             const isCurrent = wIdx === currentWordIdx;
             const isPast = wIdx < currentWordIdx;
             
