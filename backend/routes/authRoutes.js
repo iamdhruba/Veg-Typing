@@ -10,6 +10,7 @@ const {
   grantAchievement,
 } = require('../controllers/authController');
 const { protect } = require('../middleware/authMiddleware');
+const { registerValidation, loginValidation } = require('../middleware/validation');
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -17,8 +18,8 @@ const authLimiter = rateLimit({
   message: 'Too many requests from this IP, please try again after 15 minutes'
 });
 
-router.post('/register', authLimiter, registerUser);
-router.post('/login', authLimiter, loginUser);
+router.post('/register', authLimiter, registerValidation, registerUser);
+router.post('/login', authLimiter, loginValidation, loginUser);
 router.get('/me', protect, getMe);
 router.put('/stats', protect, updateStats);
 router.put('/progress', protect, syncProgress);

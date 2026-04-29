@@ -1,18 +1,22 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import ErrorBoundary from './components/ErrorBoundary';
+import Loading from './components/Loading';
 import Home from './pages/Home';
-import Leaderboard from './pages/Leaderboard';
-import Stats from './pages/Stats';
-import About from './pages/About';
-import Settings from './pages/Settings';
-import Login from './pages/Login';
-import Practice from './pages/Practice';
-import Race from './pages/Race';
-import Terms from './pages/Terms';
-import Privacy from './pages/Privacy';
-import NotFound from './pages/NotFound';
+
+// Lazy load pages for better performance
+const Leaderboard = lazy(() => import('./pages/Leaderboard'));
+const Stats = lazy(() => import('./pages/Stats'));
+const About = lazy(() => import('./pages/About'));
+const Settings = lazy(() => import('./pages/Settings'));
+const Login = lazy(() => import('./pages/Login'));
+const Practice = lazy(() => import('./pages/Practice'));
+const Race = lazy(() => import('./pages/Race'));
+const Terms = lazy(() => import('./pages/Terms'));
+const Privacy = lazy(() => import('./pages/Privacy'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 import { useThemeStore, applyTheme } from './store/useThemeStore';
 
@@ -34,27 +38,31 @@ function App() {
   }, [theme]);
 
   return (
-    <Router>
-      <div className="min-h-screen flex flex-col bg-background text-on-background selection:bg-primary-container selection:text-on-primary-container">
-        <Navbar />
-        <main className="flex-grow">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/leaderboard" element={<Leaderboard />} />
-            <Route path="/stats" element={<Stats />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/practice" element={<Practice />} />
-            <Route path="/race" element={<Race />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
-    </Router>
+    <ErrorBoundary>
+      <Router>
+        <div className="min-h-screen flex flex-col bg-background text-on-background selection:bg-primary-container selection:text-on-primary-container">
+          <Navbar />
+          <main className="flex-grow">
+            <Suspense fallback={<Loading fullScreen />}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/leaderboard" element={<Leaderboard />} />
+                <Route path="/stats" element={<Stats />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/practice" element={<Practice />} />
+                <Route path="/race" element={<Race />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </main>
+          <Footer />
+        </div>
+      </Router>
+    </ErrorBoundary>
   );
 }
 

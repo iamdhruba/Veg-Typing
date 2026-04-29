@@ -3,11 +3,12 @@ const router = express.Router();
 const Result = require('../models/Result');
 const User = require('../models/User');
 const auth = require('../middleware/authMiddleware').protect;
+const { resultValidation } = require('../middleware/validation');
 
 // @route   POST /api/results
 // @desc    Save a typing test result
 // @access  Private
-router.post('/', auth, async (req, res) => {
+router.post('/', auth, resultValidation, async (req, res) => {
   const { language, mode, duration, wpm, accuracy, wpmHistory, charData } = req.body;
 
   // Validate result data

@@ -1,6 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv').config();
 const cors = require('cors');
+const helmet = require('helmet');
 const http = require('http');
 const socketio = require('socket.io');
 const connectDB = require('./config/db');
@@ -23,6 +24,7 @@ const io = socketio(server, {
   }
 });
 
+app.use(helmet());
 app.use(cors({ origin: ALLOWED_ORIGINS, credentials: true }));
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: false, limit: '10kb' }));
