@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { useTypingStore } from '../store/useTypingStore';
 
-const Navbar = () => {
+const Navbar = React.memo(() => {
   const user = useAuthStore(s => s.user);
   const logout = useAuthStore(s => s.logout);
   const setResult = useTypingStore(s => s.setResult);
@@ -50,6 +50,6 @@ const Navbar = () => {
       </div>
     </header>
   );
-};
+});
 
 export default Navbar;

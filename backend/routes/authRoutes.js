@@ -11,6 +11,7 @@ const {
 } = require('../controllers/authController');
 const { protect } = require('../middleware/authMiddleware');
 const { registerValidation, loginValidation } = require('../middleware/validation');
+const { getToken } = require('../middleware/csrf');
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -21,6 +22,7 @@ const authLimiter = rateLimit({
 router.post('/register', authLimiter, registerValidation, registerUser);
 router.post('/login', authLimiter, loginValidation, loginUser);
 router.get('/me', protect, getMe);
+router.get('/csrf-token', protect, getToken);
 router.put('/stats', protect, updateStats);
 router.put('/progress', protect, syncProgress);
 router.post('/achievements', protect, grantAchievement);

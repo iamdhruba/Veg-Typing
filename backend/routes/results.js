@@ -1,4 +1,5 @@
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const router = express.Router();
 const Result = require('../models/Result');
 const User = require('../models/User');
@@ -6,10 +7,17 @@ const auth = require('../middleware/authMiddleware').protect;
 const { resultValidation } = require('../middleware/validation');
 const logger = require('../config/logger');
 
+// Rate limiter for result submission
+const resultLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 10, // 10 results per minute
+  message: 'Too many test submissions, please slow down'
+});
+
 // @route   POST /api/results
 // @desc    Save a typing test result
 // @access  Private
-router.post('/', auth, resultValidation, async (req, res) => {
+router.post('/', auth, resultLimiter, resultValidation, async (req, res) => {
   const { language, mode, duration, wpm, accuracy, wpmHistory, charData } = req.body;
 
   // Validate result data

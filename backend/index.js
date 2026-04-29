@@ -3,6 +3,7 @@ const dotenv = require('dotenv').config();
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
 const http = require('http');
 const socketio = require('socket.io');
 const connectDB = require('./config/db');
@@ -38,6 +39,16 @@ app.use(morgan(morganFormat, {
     write: (message) => logger.info(message.trim())
   }
 }));
+
+// Global rate limiter
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // 100 requests per 15 minutes
+  message: 'Too many requests, please try again later',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use(globalLimiter);
 
 // Health check route (before other routes)
 app.use('/health', require('./routes/health'));
