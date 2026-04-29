@@ -2,12 +2,27 @@ const express = require('express');
 const router = express.Router();
 const Result = require('../models/Result');
 const mongoose = require('mongoose');
+const logger = require('../config/logger');
 
 // @route   GET /api/leaderboard
-// @desc    Get global leaderboard with timeframes and user grouping
+// @desc    Get global leaderboard with pagination and timeframes
 // @access  Public
 router.get('/', async (req, res) => {
-  const { language = 'english', duration = 30, timeframe = 'alltime' } = req.query;
+  const { 
+    language = 'english', 
+    duration = 30, 
+    timeframe = 'alltime',
+    page = 1,
+    limit = 50 
+  } = req.query;
+  
+  const pageNum = parseInt(page);
+  const limitNum = parseInt(limit);
+  const skip = (pageNum - 1) * limitNum;
+
+  if (pageNum < 1 || limitNum < 1 || limitNum > 100) {
+    return res.status(400).json({ message: 'Invalid pagination parameters' });
+  }
   
   const matchQuery = { 
     language, 
@@ -22,14 +37,13 @@ router.get('/', async (req, res) => {
   }
 
   try {
-    // Use aggregation to group by user and get their best WPM
     const leaderboard = await Result.aggregate([
       { $match: matchQuery },
       { $sort: { wpm: -1 } },
       { $group: {
           _id: "$userId",
           bestWpm: { $max: "$wpm" },
-          doc: { $first: "$$ROOT" } // Keep the document with the highest WPM
+          doc: { $first: "$$ROOT" }
       }},
       { $replaceRoot: { newRoot: "$doc" } },
       { $lookup: {
@@ -50,13 +64,28 @@ router.get('/', async (req, res) => {
           }
       }},
       { $sort: { wpm: -1 } },
-      { $limit: 50 }
+      { $facet: {
+        metadata: [{ $count: "total" }],
+        data: [{ $skip: skip }, { $limit: limitNum }]
+      }}
     ]);
 
-    res.json(leaderboard);
+    const total = leaderboard[0].metadata[0]?.total || 0;
+    const results = leaderboard[0].data;
+
+    res.json({
+      results,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        pages: Math.ceil(total / limitNum),
+        hasMore: skip + results.length < total
+      }
+    });
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    logger.error('Error fetching leaderboard:', err);
+    res.status(500).json({ message: 'Server Error' });
   }
 });
 

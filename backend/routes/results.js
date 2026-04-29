@@ -4,6 +4,7 @@ const Result = require('../models/Result');
 const User = require('../models/User');
 const auth = require('../middleware/authMiddleware').protect;
 const { resultValidation } = require('../middleware/validation');
+const logger = require('../config/logger');
 
 // @route   POST /api/results
 // @desc    Save a typing test result
@@ -63,21 +64,46 @@ router.post('/', auth, resultValidation, async (req, res) => {
 
     res.json(result);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    logger.error('Error saving result:', err);
+    res.status(500).json({ message: 'Server Error' });
   }
 });
 
 // @route   GET /api/results/me
-// @desc    Get user's results
+// @desc    Get user's results with pagination
 // @access  Private
 router.get('/me', auth, async (req, res) => {
   try {
-    const results = await Result.find({ userId: req.user.id }).sort({ timestamp: -1 }).limit(100);
-    res.json(results);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    if (page < 1 || limit < 1 || limit > 100) {
+      return res.status(400).json({ message: 'Invalid pagination parameters' });
+    }
+
+    const [results, total] = await Promise.all([
+      Result.find({ userId: req.user.id })
+        .sort({ timestamp: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      Result.countDocuments({ userId: req.user.id })
+    ]);
+
+    res.json({
+      results,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit),
+        hasMore: skip + results.length < total
+      }
+    });
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    logger.error('Error fetching user results:', err);
+    res.status(500).json({ message: 'Server Error' });
   }
 });
 
@@ -103,8 +129,8 @@ router.delete('/me', auth, async (req, res) => {
     
     res.json({ message: 'Data wiped successfully' });
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    logger.error('Error wiping user data:', err);
+    res.status(500).json({ message: 'Server Error' });
   }
 });
 
