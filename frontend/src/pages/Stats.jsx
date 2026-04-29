@@ -50,6 +50,21 @@ const Stats = () => {
     }
   };
 
+  // Memoize charData at the top level
+  const globalCharData = useMemo(() => {
+    const data = {};
+    results.forEach(r => {
+      if (r.charData) {
+        Object.entries(r.charData).forEach(([char, charInfo]) => {
+          if (!data[char]) data[char] = { correct: 0, incorrect: 0 };
+          data[char].correct += charInfo.correct;
+          data[char].incorrect += charInfo.incorrect;
+        });
+      }
+    });
+    return data;
+  }, [results]);
+
   const containerVars = {
     hidden: { opacity: 0 },
     visible: {
@@ -318,19 +333,7 @@ const Stats = () => {
           <div className="min-w-[800px]">
             <HeatmapKeyboard 
               mode={heatmapMode} 
-              charData={useMemo(() => {
-                const globalCharData = {};
-                results.forEach(r => {
-                  if (r.charData) {
-                    Object.entries(r.charData).forEach(([char, data]) => {
-                      if (!globalCharData[char]) globalCharData[char] = { correct: 0, incorrect: 0 };
-                      globalCharData[char].correct += data.correct;
-                      globalCharData[char].incorrect += data.incorrect;
-                    });
-                  }
-                });
-                return globalCharData;
-              }, [results])} 
+              charData={globalCharData} 
             />
           </div>
         </div>
