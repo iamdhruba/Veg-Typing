@@ -21,7 +21,8 @@ const Login = () => {
       setUser(user);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.message || 'Authentication failed');
+      const data = err.response?.data;
+      setError(data?.errors?.[0]?.msg || data?.message || 'Authentication failed');
     }
   };
 
@@ -69,6 +70,7 @@ const Login = () => {
             onChange={(e) => setFormData({...formData, password: e.target.value})}
             required
           />
+          {!isLogin && <p className="text-[10px] text-on-background/40 mt-1">Min 6 chars, must include uppercase, lowercase, and a number</p>}
         </div>
 
         {error && <p className="text-primary text-xs font-bold uppercase">{error}</p>}
