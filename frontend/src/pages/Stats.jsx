@@ -65,6 +65,21 @@ const Stats = () => {
 
   const { achievements, unlockedCount } = useAchievements(results);
 
+  // Check if user is logged in
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center py-32 gap-6">
+        <p className="text-2xl font-black text-on-background/60">Please log in to view your stats</p>
+        <a 
+          href="/login" 
+          className="px-8 py-4 bg-primary text-on-primary font-black text-[10px] uppercase tracking-widest hover:bg-primary/90 transition-colors"
+        >
+          Go to Login
+        </a>
+      </div>
+    );
+  }
+
   if (loading && page === 1) return (
     <div className="flex flex-col items-center justify-center py-32 gap-6">
       <motion.div 
@@ -242,14 +257,14 @@ const Stats = () => {
         <motion.div variants={itemVars} className="bg-surface-container-low border border-outline/10 p-12 flex flex-col justify-center items-center text-center">
           <div className="w-36 h-36 bg-surface-container-high rounded-full flex items-center justify-center mb-10 relative">
             <div className="absolute inset-0 border border-primary/20 rounded-full animate-ping opacity-5" />
-            <span className="text-5xl font-black text-primary/60">{user.username[0].toUpperCase()}</span>
+            <span className="text-5xl font-black text-primary/60">{user?.username?.[0]?.toUpperCase() || 'U'}</span>
           </div>
-          <p className="text-2xl font-black text-on-background uppercase tracking-tighter mb-2">{user.username}</p>
-          <p className="text-[10px] text-on-background/40 uppercase tracking-[0.2em] mb-12">{user.email}</p>
+          <p className="text-2xl font-black text-on-background uppercase tracking-tighter mb-2">{user?.username || 'User'}</p>
+          <p className="text-[10px] text-on-background/40 uppercase tracking-[0.2em] mb-12">{user?.email || ''}</p>
           <div className="w-full space-y-2">
             <div className="bg-surface-container-high/40 p-4 flex justify-between items-center border border-outline/5">
               <span className="text-[9px] font-black text-on-background/30 uppercase tracking-widest">Joined</span>
-              <span className="text-xs font-black text-on-background/60 uppercase tracking-tighter">{format(new Date(user.createdAt), 'MMM yyyy')}</span>
+              <span className="text-xs font-black text-on-background/60 uppercase tracking-tighter">{user?.createdAt ? format(new Date(user.createdAt), 'MMM yyyy') : 'N/A'}</span>
             </div>
             <div className="bg-surface-container-high/40 p-4 flex justify-between items-center border border-outline/5">
               <span className="text-[9px] font-black text-on-background/30 uppercase tracking-widest">Status</span>
