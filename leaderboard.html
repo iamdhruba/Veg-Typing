@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+                  "on-secondary-container": "#bab8b7",
+                  "on-tertiary": "#313030",
+                  "on-primary-fixed-variant": "#930017",
+                  "on-secondary-fixed": "#1c1b1b",
+                  "on-error": "#690005",
+                  "surface-dim": "#121414",
+                  "outline": "#ad8885",
+                  "surface-container-low": "#1a1c1c",
+                  "on-secondary": "#313030",
+                  "surface-container-lowest": "#0d0e0f",
+                  "surface-container": "#1e2020",
+                  "surface": "#121414",
+                  "secondary-fixed-dim": "#c8c6c5",
+                  "on-surface-variant": "#e7bdba",
+                  "inverse-on-surface": "#2f3131",
+                  "on-tertiary-fixed": "#1c1b1b",
+                  "on-primary": "#68000d",
+                  "surface-container-high": "#292a2a",
+                  "on-error-container": "#ffdad6",
+                  "tertiary-fixed-dim": "#c8c6c5",
+                  "surface-tint": "#ffb3af",
+                  "primary-container": "#d30026",
+                  "on-background": "#e3e2e2",
+                  "secondary": "#c8c6c5",
+                  "on-surface": "#e3e2e2",
+                  "inverse-surface": "#e3e2e2",
+                  "inverse-primary": "#bf0021",
+                  "surface-variant": "#343535",
+                  "surface-bright": "#383939",
+                  "outline-variant": "#5d3f3d",
+                  "background": "#121414",
+                  "on-secondary-fixed-variant": "#474646",
+                  "surface-container-highest": "#343535",
+                  "error": "#ffb4ab",
+                  "secondary-fixed": "#e5e2e1",
+                  "on-primary-fixed": "#410005",
+                  "on-primary-container": "#ffe3e0",
+                  "tertiary-container": "#696868",
+                  "primary": "#ffb3af",
+                  "primary-fixed": "#ffdad7",
+                  "secondary-container": "#4a4949",
+                  "on-tertiary-fixed-variant": "#474746",
+                  "on-tertiary-container": "#ebe8e7",
+                  "error-container": "#93000a",
+                  "tertiary-fixed": "#e5e2e1",
+                  "tertiary": "#c8c6c5",
+                  "primary-fixed-dim": "#ffb3af"
+          },
+          "borderRadius": {
+                  "DEFAULT": "0.25rem",
+                  "lg": "0.5rem",
+                  "xl": "0.75rem",
+                  "full": "9999px"
+          },
+          "spacing": {
+                  "unit": "8px",
+                  "margin-desktop": "80px",
+                  "stack-sm": "16px",
+                  "stack-lg": "48px",
+                  "gutter": "32px",
+                  "container-max": "1440px",
+                  "stack-md": "32px",
+                  "section-gap": "128px"
+          },
+          "fontFamily": {
+                  "headline-xl": ["Manrope"],
+                  "body-md": ["Manrope"],
+                  "body-lg": ["Manrope"],
+                  "display-xl": ["Manrope"],
+                  "caption": ["Manrope"],
+                  "display-lg": ["Manrope"],
+                  "label-caps": ["Manrope"],
+                  "headline-md": ["Manrope"]
+          },
+          "fontSize": {
+                  "headline-xl": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                  "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400"}],
+                  "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400"}],
+                  "display-xl": ["72px", {"lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "800"}],
+                  "caption": ["13px", {"lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                  "display-lg": ["56px", {"lineHeight": "1.1", "letterSpacing": "-0.03em", "fontWeight": "700"}],
+                  "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "700"}],
+                  "headline-md": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .text-monolith-red { color: #D30026; }
+    .bg-monolith-red { background-color: #D30026; }
+    .border-monolith-red { border-color: #D30026; }
+  </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<nav class="bg-neutral-950 border-b border-neutral-800 sticky top-0 z-50">
+<div class="flex justify-between items-center w-full px-20 h-24 max-w-[1440px] mx-auto">
+<div class="text-2xl font-black tracking-tighter text-[#D30026]">MONOLITH</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="font-manrope text-[10px] tracking-[0.2em] font-bold uppercase text-neutral-500 hover:text-[#D30026] transition-colors duration-200" href="#">Punctuation</a>
+<a class="font-manrope text-[10px] tracking-[0.2em] font-bold uppercase text-neutral-500 hover:text-[#D30026] transition-colors duration-200" href="#">Numbers</a>
+<a class="font-manrope text-[10px] tracking-[0.2em] font-bold uppercase text-neutral-500 hover:text-[#D30026] transition-colors duration-200" href="#">Time</a>
+<a class="font-manrope text-[10px] tracking-[0.2em] font-bold uppercase text-neutral-500 hover:text-[#D30026] transition-colors duration-200" href="#">Words</a>
+<a class="font-manrope text-[10px] tracking-[0.2em] font-bold uppercase text-neutral-500 hover:text-[#D30026] transition-colors duration-200" href="#">Quote</a>
+<a class="font-manrope text-[10px] tracking-[0.2em] font-bold uppercase text-neutral-500 hover:text-[#D30026] transition-colors duration-200" href="#">Zen</a>
+</div>
+<div class="flex items-center gap-6">
+<button class="material-symbols-outlined text-neutral-500 hover:text-[#D30026] transition-colors">leaderboard</button>
+<button class="material-symbols-outlined text-neutral-500 hover:text-[#D30026] transition-colors">settings</button>
+<div class="h-8 w-8 rounded-full bg-surface-container border border-neutral-800 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="professional portrait of a man in dark studio lighting with sharp features and a focused expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuChdYKqTJnOj4UU6YNefnO88sT6adS6jtNqesNXhJEQ6su05n4UsMBLUsSWDNJV5IhqJkaZLjA324AsIOWdZHRXuTBC0c9eZFeCE6XWfhGQAALpZb0MbGStl0pF0MZ4UKlCoLbRvxb6PBS9MRnSKZ_JmNtRAxhXgZDOEWalhQpReg9zJ7pSCKct3TTXcLsKx2va7MHBsjT3M2CcKlISJZqW1Ut9ThEEPN57JKxbcY6jnYTcJtlgUaOu_UuXbkQSzZLt3_5FBBer34IG"/>
+</div>
+</div>
+</div>
+</nav>
+<main class="flex-grow max-w-[1440px] mx-auto w-full px-20 pt-16 pb-24">
+<!-- Header & Time Filters -->
+<header class="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+<div>
+<h1 class="font-display-lg text-display-lg mb-2">Global Leaderboard</h1>
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-[0.3em]">Precision. Speed. Dominance.</p>
+</div>
+<div class="flex bg-surface-container-low border border-neutral-800 p-1">
+<button class="px-6 py-2 font-label-caps text-label-caps text-on-surface hover:text-monolith-red transition-colors">Daily</button>
+<button class="px-6 py-2 font-label-caps text-label-caps text-on-surface hover:text-monolith-red transition-colors border-x border-neutral-800">Weekly</button>
+<button class="px-6 py-2 font-label-caps text-label-caps text-monolith-red">All-time</button>
+</div>
+</header>
+<!-- Podium Spotlight (Asymmetric Hero) -->
+<div class="grid grid-cols-12 gap-8 mb-24">
+<!-- Rank 2 Highlight -->
+<div class="col-span-12 lg:col-span-3 mt-12">
+<div class="bg-surface-container border border-neutral-800 p-8 h-full flex flex-col justify-end relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 font-display-xl text-neutral-800 opacity-20 pointer-events-none">2</div>
+<div class="mb-4">
+<img class="w-16 h-16 grayscale hover:grayscale-0 transition-all duration-500 mb-6 border border-neutral-700" data-alt="portrait of a focused professional woman in minimalist high fashion attire against a dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1knVDPOqsWhzztTZt8R43WTU6-rJgsDQ9KXtEksl2gPfeDgUg3s_7Gj6TKf91aBJod3WrvzlnS07YdYg0v3DujTUT9A7g-Kzd1i3o4uy0KSEDpjDPzwmb3rpYRKs623OYsZmpUXOjPDXkU8jIpFki0gERtLS6EcFl1sUW0Pc5S767959GXg6SHsNOpH7GSG7WtQZD9h28wkRf0b_mDUJl_ixTCSOzNFCEBN11h3lHW0WkWEX6fBSa2c0a_u2WYQZNAC61V1_TQvG_"/>
+<h3 class="font-headline-md text-headline-md mb-1">AETHER_</h3>
+<p class="font-label-caps text-label-caps text-neutral-500">United States</p>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label-caps text-label-caps text-monolith-red">158 WPM</span>
+<span class="font-caption text-caption text-neutral-400">99.8% Accuracy</span>
+</div>
+</div>
+</div>
+<!-- Champion Spotlight (Rank 1) -->
+<div class="col-span-12 lg:col-span-6">
+<div class="bg-surface-container-high border-2 border-monolith-red p-12 h-full flex flex-col justify-center items-center text-center relative overflow-hidden">
+<div class="absolute inset-0 opacity-10 pointer-events-none">
+<img class="w-full h-full object-cover" data-alt="abstract macro photography of vintage typewriter mechanical arms with cinematic red lighting and deep shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRvCpV0mM6O-yUV3lWbrKEL2Saend40IcwtBW7zuOs6L2AXvAlCBxT5aqMyiaqPNFY8p_cN2BPmmz1cfifY-6KPE-IEiRq8KilaCfRKbHIo15b1wa3vJIP6cGhTAING4UJoo0_m_4smBzbeR9EJiuJHMaI4Tw6h7yvo3I0DiQAiSp9jlhUpfwhKEszy38TeOZa9n0ew1fsuKBIwbHiD_itMmxkd504yp3P484574PNHqPReQ3fwAW5wcWD4pjaJQO9GyIKm1W6q3s4"/>
+</div>
+<div class="relative z-10">
+<div class="w-32 h-32 mx-auto mb-8 relative">
+<img class="w-full h-full object-cover border-2 border-monolith-red" data-alt="striking portrait of a young man with intense gaze in dramatic moody lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtskwcUXFY8K97zGKuAkRHMvHyMjB15oKnopUFPH_77KNRMAOuzvpHjelIpfnlWjSd4wQf26Sspk4oXiDWoREv4eaMUfYIiS23eX_TCqPRyT2gMQfHjHYXW_J4h2OJZtx7gH3re09rKV6zCm_qgjfMF5aUAe-kp1aKzmL8jXLa_OB6iULv3OZlsAly3MJD8FaF3eMEVIVRtNqXhLnyUGk0QNMJ5nXgSAyLNXPA-9ZEX2qDzJhaIleGnUgB6J_GnfjI6PAHRzPvZDAk"/>
+<div class="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-monolith-red px-4 py-1 font-label-caps text-white text-[10px]">CHAMPION</div>
+</div>
+<h2 class="font-display-xl text-display-xl mb-2 text-monolith-red">MONOLITHIC</h2>
+<p class="font-headline-md text-headline-md mb-8 tracking-widest text-on-surface">174 WPM</p>
+<div class="grid grid-cols-2 gap-12 text-left border-t border-neutral-800 pt-8">
+<div>
+<p class="font-label-caps text-label-caps text-neutral-500 mb-1">ACCURACY</p>
+<p class="font-body-lg text-body-lg font-bold">100.0%</p>
+</div>
+<div>
+<p class="font-label-caps text-label-caps text-neutral-500 mb-1">STREAK</p>
+<p class="font-body-lg text-body-lg font-bold">42 DAYS</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Rank 3 Highlight -->
+<div class="col-span-12 lg:col-span-3 mt-20">
+<div class="bg-surface-container border border-neutral-800 p-8 h-full flex flex-col justify-end relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 font-display-xl text-neutral-800 opacity-20 pointer-events-none">3</div>
+<div class="mb-4">
+<img class="w-16 h-16 grayscale hover:grayscale-0 transition-all duration-500 mb-6 border border-neutral-700" data-alt="close up headshot of a person with sharp facial features in high contrast black and white lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqhUFokvu6Up5VAyEQ_Z7RswVTkMOMYIvWizA1FxNYg-ITHK2OeOESFQT0nd0S89-44cq_Z_-Ipy-eLHGfYUnqqqk1Z6RLDvGIR2qYIx6lRTvTue_UOLTAyCKC_qG96531K3swWju_TvUhNibKDKT8ew3-MkFX0wvSHs57rYyNDrIp2vcwWHGcYz96qYAjPPKHFrrbRmzr9UF0GJs88rEPeQfGlXSB3_8iM5yo-VD0xCFD6JGnXvS0c1-r4vvMwjVPdTVqaIhYvgi0"/>
+<h3 class="font-headline-md text-headline-md mb-1">NULL_PTR</h3>
+<p class="font-label-caps text-label-caps text-neutral-500">Germany</p>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label-caps text-label-caps text-monolith-red">152 WPM</span>
+<span class="font-caption text-caption text-neutral-400">99.4% Accuracy</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Leaderboard List -->
+<section class="mt-section-gap">
+<div class="grid grid-cols-12 gap-8 px-8 mb-6 border-b border-neutral-800 pb-4">
+<div class="col-span-1 font-label-caps text-label-caps text-neutral-500">RANK</div>
+<div class="col-span-5 font-label-caps text-label-caps text-neutral-500">USER</div>
+<div class="col-span-2 font-label-caps text-label-caps text-neutral-500 text-right">WPM</div>
+<div class="col-span-2 font-label-caps text-label-caps text-neutral-500 text-right">ACCURACY</div>
+<div class="col-span-2 font-label-caps text-label-caps text-neutral-500 text-right">DATE</div>
+</div>
+<div class="space-y-4">
+<!-- Row 4 -->
+<div class="grid grid-cols-12 gap-8 px-8 py-6 bg-surface-container-low border border-neutral-800 items-center hover:border-monolith-red transition-all cursor-default">
+<div class="col-span-1 font-headline-md">4</div>
+<div class="col-span-5 flex items-center gap-4">
+<div class="w-10 h-10 bg-neutral-800 border border-neutral-700 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="minimalist studio portrait of a woman looking away from camera with moody lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJEWG9arnh35YdUUr19WzePfGDKYnkwwSNE3tzPWZOSLlO7jUkfvaT94NMH5Tupg91ysZSp6l2EZUY3fN3X4A0Q79UiMLevfDSwINp5V-vRcnlzbWE7wcJQg_ARgtzswXrk4tsGLJpz4p2Wy5EiMGKFfSODC2HYhIEOmoEnupLLJLNFXvaow33Hhu4A4DWIdEwCY-8auDHpEan775sItJm3yu2m7lXTHNRB8L4oSG6LJYB5pz2U8firtufme_DIZDXeP1JcRshD0z5"/>
+</div>
+<span class="font-body-lg font-bold">VELVET_KEY</span>
+</div>
+<div class="col-span-2 text-right font-body-lg text-monolith-red font-bold">149.2</div>
+<div class="col-span-2 text-right font-body-lg">99.1%</div>
+<div class="col-span-2 text-right font-caption text-neutral-500">22 OCT 2024</div>
+</div>
+<!-- Row 5 -->
+<div class="grid grid-cols-12 gap-8 px-8 py-6 bg-surface-container-low border border-neutral-800 items-center hover:border-monolith-red transition-all cursor-default">
+<div class="col-span-1 font-headline-md">5</div>
+<div class="col-span-5 flex items-center gap-4">
+<div class="w-10 h-10 bg-neutral-800 border border-neutral-700 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="close-up portrait of a man with shadow across half of his face in high-end photography style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzcdZTUOZBoq5VwG_ISD5YNjSYLsP9Ep2kXEvyeb3nAj4YqFz2ONlQ8-2MNYKcaAtGEXNLScVB9RNpUugHwUvPplnmadhx5vRFI2NkE24v4Y3qvXnhfSVeERzqgdywRJf0C5CltGwMVz8q2JovPjRhbwz_Wq3Zwo5IW0euw6h_1KbfGzEXa4EQt0gvgdBB_ZxB9YaF7AqhyJIp1lUntDQxFVcbpTRCNeBjBhpIMur4x_oOZ2yQ1ZBXu9O91CexSlBfaawMCwq4fxBK"/>
+</div>
+<span class="font-body-lg font-bold">GHOST_WRITER</span>
+</div>
+<div class="col-span-2 text-right font-body-lg text-monolith-red font-bold">148.5</div>
+<div class="col-span-2 text-right font-body-lg">98.9%</div>
+<div class="col-span-2 text-right font-caption text-neutral-500">21 OCT 2024</div>
+</div>
+<!-- Row 6 -->
+<div class="grid grid-cols-12 gap-8 px-8 py-6 bg-surface-container-low border border-neutral-800 items-center hover:border-monolith-red transition-all cursor-default">
+<div class="col-span-1 font-headline-md">6</div>
+<div class="col-span-5 flex items-center gap-4">
+<div class="w-10 h-10 bg-neutral-800 border border-neutral-700 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="headshot of a man with intense expression and dark cinematic studio background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLMzwIoVrUkhgkbthxqRGn7HSxBc-Z1u8sa9OET0vorF6COHR3Gp7rwIvSqgO-XrSDCVQBJ4YLV3BMzG9ShFePutquZQ94DSXKJK-4Bp6Bw2CWD6bAl4vy-5QI7UCzyXT-46TJoQKSV2_7Tmrz9czdc_frAOPMd397PCIliZNrcmNKKbA6zqekb73LcEnLQDRlgBuSlLJXAsfNlSTM1LpMCMqvVznZDlHlU2VA3XPC1pDBZCCNwvO7UFlOI8AN8nWr1oTY4a1d0RfC"/>
+</div>
+<span class="font-body-lg font-bold">VOID_SHIFT</span>
+</div>
+<div class="col-span-2 text-right font-body-lg text-monolith-red font-bold">147.0</div>
+<div class="col-span-2 text-right font-body-lg">99.5%</div>
+<div class="col-span-2 text-right font-caption text-neutral-500">20 OCT 2024</div>
+</div>
+<!-- Row 7 -->
+<div class="grid grid-cols-12 gap-8 px-8 py-6 bg-surface-container-low border border-neutral-800 items-center hover:border-monolith-red transition-all cursor-default">
+<div class="col-span-1 font-headline-md">7</div>
+<div class="col-span-5 flex items-center gap-4">
+<div class="w-10 h-10 bg-neutral-800 border border-neutral-700 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="artistic portrait of a woman in low key lighting with elegant shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1SqE2ojeMSi3nhwCyGgY4WnLl6c9Q_Q1JQje4RSzP_YHOMwLDkAs0XqmWMYyR8G2gVGDrd3NriwDelbpU5usvhuTDU4o7EpBPEv8ga6aE6ura44bgSx5Jf5Gb_6iDt5N4RaQE0__XZOMJUJl_ysrZTVgBZO4AgyUlhBP-JJRIP7q155aVt3ANnbfBMN-OUeQYv7WgKU3AjXdjR0UORMHwO6ZsCyXS1ClwJxX3CJZKBqr4dLQ79xr4arJcHwu3FFcRos0yFWM53Z4j"/>
+</div>
+<span class="font-body-lg font-bold">TYPE_ZEN</span>
+</div>
+<div class="col-span-2 text-right font-body-lg text-monolith-red font-bold">146.3</div>
+<div class="col-span-2 text-right font-body-lg">98.2%</div>
+<div class="col-span-2 text-right font-caption text-neutral-500">19 OCT 2024</div>
+</div>
+</div>
+<!-- Pagination -->
+<div class="flex justify-center items-center gap-4 mt-16">
+<button class="w-10 h-10 border border-neutral-800 flex items-center justify-center hover:border-monolith-red transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<div class="flex items-center gap-2">
+<button class="w-10 h-10 bg-monolith-red text-white font-label-caps">1</button>
+<button class="w-10 h-10 border border-neutral-800 font-label-caps hover:border-monolith-red">2</button>
+<button class="w-10 h-10 border border-neutral-800 font-label-caps hover:border-monolith-red">3</button>
+<span class="px-2">...</span>
+<button class="w-10 h-10 border border-neutral-800 font-label-caps hover:border-monolith-red">24</button>
+</div>
+<button class="w-10 h-10 border border-neutral-800 flex items-center justify-center hover:border-monolith-red transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-transparent border-t border-neutral-900">
+<div class="flex flex-col items-center gap-6 w-full max-w-7xl mx-auto py-12">
+<div class="flex gap-8">
+<a class="font-manrope text-[9px] tracking-widest uppercase text-neutral-600 hover:text-[#D30026] transition-colors" href="#">Support</a>
+<a class="font-manrope text-[9px] tracking-widest uppercase text-neutral-600 hover:text-[#D30026] transition-colors" href="#">Github</a>
+<a class="font-manrope text-[9px] tracking-widest uppercase text-neutral-600 hover:text-[#D30026] transition-colors" href="#">Discord</a>
+<a class="font-manrope text-[9px] tracking-widest uppercase text-neutral-600 hover:text-[#D30026] transition-colors" href="#">Terms</a>
+<a class="font-manrope text-[9px] tracking-widest uppercase text-neutral-600 hover:text-[#D30026] transition-colors" href="#">Privacy</a>
+</div>
+<div class="font-manrope text-[9px] tracking-widest uppercase text-neutral-600">© 2024 MONOLITH TYPE. PRECISION CRAFTED.</div>
+</div>
+</footer>
+</body></html>

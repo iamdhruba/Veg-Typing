@@ -1,0 +1,149 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useTypingStore } from '../store/useTypingStore';
+import { useAuthStore } from '../store/useAuthStore';
+import api from '../services/api';
+import { getRandomWords } from '../utils/wordLists';
+import { getPersonalizedWords } from '../utils/weakKeys';
+import ModeSelector from '../components/ModeSelector';
+import TypingBox from '../components/TypingBox';
+import ResultCard from '../components/ResultCard';
+import SEO from '../components/SEO';
+import { Toaster, toast } from 'react-hot-toast';
+
+const Home = () => {
+  const language = useTypingStore(s => s.language);
+  const mode = useTypingStore(s => s.mode);
+  const duration = useTypingStore(s => s.duration);
+  const customText = useTypingStore(s => s.customText);
+  const setMode = useTypingStore(s => s.setMode);
+  const [words, setWords] = useState([]);
+  const result = useTypingStore(s => s.result);
+  const setResult = useTypingStore(s => s.setResult);
+  const [testId, setTestId] = useState(0); 
+  const user = useAuthStore(s => s.user);
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const loadWords = async () => {
+      if (mode === 'custom' && customText) {
+        setWords(customText.trim().split(/\s+/));
+      } else if (mode === 'ai') {
+        try {
+          const { data } = await api.get('/results/me');
+          setWords(getPersonalizedWords(language, data, 100));
+        } catch (e) {
+          setWords(getRandomWords(language, 100));
+        }
+      } else {
+        setWords(getRandomWords(language, 500));
+      }
+    };
+    loadWords();
+    // We don't necessarily want to clear result here if it's coming from the store and we just mounted
+    // But for a new test (id change), we might.
+    // However, the location.key logic will handle resetting when navigating.
+  }, [language, mode, duration, testId, customText, location.key]);
+
+  useEffect(() => {
+    if (location.pathname === '/') {
+      setResult(null);
+    }
+  }, [location.key]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Tab') {
+        // Prevent accidental restarts unless test is finished or result is shown
+        if (result || document.activeElement?.tagName !== 'INPUT') {
+          e.preventDefault();
+          handleRestart();
+        }
+      }
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        navigate('/settings');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [navigate, result]);
+
+  const handleFinish = async (finalResult) => {
+    setResult(finalResult);
+    toast.success('Test Completed!', {
+      style: {
+        background: 'var(--surface)',
+        color: 'var(--primary)',
+        border: '1px solid var(--primary)',
+        borderRadius: '0px'
+      }
+    });
+
+    // Save to backend if logged in
+    if (user) {
+      try {
+        await api.post('/results', {
+          language: finalResult.language,
+          mode: finalResult.mode || 'time',
+          duration: finalResult.duration,
+          wpm: finalResult.wpm,
+          accuracy: finalResult.accuracy,
+          wpmHistory: finalResult.wpmHistory,
+          charData: finalResult.charData
+        });
+
+        useAuthStore.getState().checkAchievements({
+          wpm: finalResult.wpm,
+          accuracy: finalResult.accuracy,
+          duration: finalResult.duration,
+          language: finalResult.language
+        });
+      } catch (error) {
+        console.error('Failed to save result:', error);
+      }
+    }
+  };
+
+  const handleRestart = () => {
+    setTestId(prev => prev + 1);
+  };
+
+  return (
+    <div className={`max-w-7xl mx-auto w-full px-12 py-16 flex flex-col items-center justify-center min-h-[80vh] ${result ? 'py-4' : ''}`}>
+      <SEO
+        title="VEG — Free Nepali Typing Test | Preeti & Unicode Speed Test"
+        description="Test and improve your Nepali typing speed for free. Practice Preeti, Unicode, and English layouts with real-time WPM tracking, accuracy analytics, and AI-powered drills."
+        path="/"
+        keywords="typing test, WPM test, Nepali speed test, Preeti keyboard online, नेपाली टाइपिङ टेस्ट"
+      />
+      <Toaster position="bottom-center" />
+      
+      {!result ? (
+        <>
+          <ModeSelector />
+          <TypingBox 
+            key={`${language}-${mode}-${duration}-${testId}`}
+            words={words} 
+            mode={mode} 
+            duration={duration} 
+            language={language}
+            onFinish={handleFinish}
+            pbWpm={user?.personalBests?.[language]?.wpm || 0}
+          />
+          <div className="mt-24 text-on-background/50 font-mono text-xs uppercase tracking-[0.2em] flex gap-8">
+            <span className="flex items-center gap-2"><kbd className="bg-surface-container-high px-2 py-1 text-on-background/70">tab</kbd> restart</span>
+            <span className="flex items-center gap-2"><kbd className="bg-surface-container-high px-2 py-1 text-on-background/70">esc</kbd> settings</span>
+          </div>
+        </>
+      ) : (
+        <ResultCard result={result} onRestart={handleRestart} />
+      )}
+    </div>
+  );
+};
+
+export default Home;

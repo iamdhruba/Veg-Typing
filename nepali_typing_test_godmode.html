@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NepaliType</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Noto+Sans+Devanagari:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#1a1a1e;--surface:#2a2a2e;--surface2:#323236;--accent:#e2b714;
+  --dim:#646669;--correct:#d1d0c5;--error:#ca4754;--caret:#e2b714;
+  --text:#d1d0c5;--muted:#646669;--border:#3a3a3e;
+}
+body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;min-height:100vh;overflow-x:hidden}
+.app{max-width:1200px;margin:0 auto;padding:0 2rem}
+
+/* NAVBAR */
+nav{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 0;border-bottom:1px solid var(--border)}
+.logo{font-size:1.5rem;font-weight:600;color:var(--accent);letter-spacing:-0.5px;display:flex;align-items:center;gap:8px}
+.logo-icon{background:var(--accent);color:#000;padding:2px 8px;border-radius:4px;font-size:0.9rem;font-weight:700}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-btn{background:none;border:none;color:var(--dim);cursor:pointer;font-family:inherit;font-size:0.85rem;padding:6px 12px;border-radius:4px;transition:all 0.2s}
+.nav-btn:hover,.nav-btn.active{color:var(--accent);background:rgba(226,183,20,0.08)}
+.nav-btn.primary{background:var(--accent);color:#000;font-weight:600}
+.nav-btn.primary:hover{background:#f0c420}
+
+/* TABS */
+.tabs{display:flex;gap:0.5rem;padding:1.5rem 0 0.5rem;flex-wrap:wrap;align-items:center}
+.tab-group{display:flex;gap:0.25rem;background:var(--surface);border-radius:8px;padding:4px}
+.tab{background:none;border:none;color:var(--dim);cursor:pointer;font-family:inherit;font-size:0.8rem;padding:6px 14px;border-radius:5px;transition:all 0.15s;white-space:nowrap}
+.tab:hover{color:var(--text)}
+.tab.active{background:var(--surface2);color:var(--accent);font-weight:500}
+.tab-sep{width:1px;height:24px;background:var(--border);margin:0 0.5rem}
+
+/* LANGUAGE PILLS */
+.lang-tabs{display:flex;gap:0.5rem;padding:0.5rem 0}
+.lang-tab{background:var(--surface);border:1px solid var(--border);color:var(--dim);cursor:pointer;font-family:inherit;font-size:0.8rem;padding:8px 16px;border-radius:20px;transition:all 0.2s;font-family:'Noto Sans Devanagari',monospace}
+.lang-tab:hover{color:var(--text);border-color:var(--dim)}
+.lang-tab.active{background:rgba(226,183,20,0.12);border-color:var(--accent);color:var(--accent)}
+
+/* TYPING AREA */
+.typing-container{position:relative;margin:2rem 0;cursor:text}
+.word-display{font-size:1.5rem;line-height:2.5rem;letter-spacing:0.05em;min-height:7.5rem;max-height:7.5rem;overflow:hidden;word-break:break-word;padding:0.5rem 0}
+.word{display:inline-block;margin-right:0.6rem;position:relative}
+.word.current .char:first-child::before{content:'';position:absolute;left:-2px;top:0;height:100%;width:2px;background:var(--caret);animation:blink 1s step-end infinite}
+.char{position:relative;color:var(--dim)}
+.char.correct{color:var(--correct)}
+.char.incorrect{color:var(--error);text-decoration:underline;text-decoration-color:var(--error)}
+.char.current{color:var(--text)}
+.char.extra{color:var(--error);opacity:0.7}
+.hidden-input{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:text;font-size:16px}
+.typing-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(to bottom,transparent 60%,var(--bg));pointer-events:none}
+
+/* TIMER / WPM BAR */
+.stats-bar{display:flex;align-items:center;gap:2rem;padding:0.5rem 0;font-size:0.9rem}
+.stat-big{font-size:2rem;font-weight:300;color:var(--accent);min-width:80px}
+.stat-label{font-size:0.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.1em;margin-top:-4px}
+
+/* RESULT CARD */
+.result-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:2rem;margin:2rem 0;animation:fadeIn 0.4s ease}
+.result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1rem;margin-bottom:1.5rem}
+.result-stat{text-align:center}
+.result-stat .val{font-size:2.5rem;font-weight:300;color:var(--accent)}
+.result-stat .unit{font-size:0.75rem;color:var(--dim)}
+.result-stat .lbl{font-size:0.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.1em;margin-top:4px}
+.result-stat.correct .val{color:#6fcf97}
+.result-stat.error .val{color:var(--error)}
+.result-actions{display:flex;gap:1rem;margin-top:1rem}
+.btn{background:none;border:1px solid var(--border);color:var(--text);cursor:pointer;font-family:inherit;font-size:0.85rem;padding:10px 20px;border-radius:6px;transition:all 0.2s}
+.btn:hover{border-color:var(--dim);color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#000;font-weight:600}
+.btn.primary:hover{background:#f0c420}
+
+/* CHAR STATS BAR */
+.char-bar{display:flex;height:6px;border-radius:3px;overflow:hidden;gap:2px;margin:0.5rem 0}
+.char-bar-correct{background:#6fcf97}
+.char-bar-error{background:var(--error)}
+.char-bar-space{background:var(--dim);opacity:0.3}
+
+/* LEADERBOARD */
+.leaderboard-page{padding:1rem 0}
+.lb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.lb-filters{display:flex;gap:0.5rem;flex-wrap:wrap}
+.lb-filter{background:var(--surface);border:1px solid var(--border);color:var(--dim);padding:6px 14px;border-radius:6px;font-size:0.8rem;cursor:pointer;transition:all 0.2s;font-family:inherit}
+.lb-filter:hover{color:var(--text)}
+.lb-filter.active{background:rgba(226,183,20,0.12);border-color:var(--accent);color:var(--accent)}
+.lb-table{width:100%;border-collapse:collapse}
+.lb-table th{text-align:left;padding:10px 16px;font-size:0.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.1em;border-bottom:1px solid var(--border)}
+.lb-table td{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.9rem;transition:background 0.15s}
+.lb-table tr:hover td{background:var(--surface)}
+.lb-table .rank{color:var(--dim);font-weight:500;width:40px}
+.lb-table .rank.gold{color:#ffd700}
+.lb-table .rank.silver{color:#c0c0c0}
+.lb-table .rank.bronze{color:#cd7f32}
+.lb-table .wpm-val{color:var(--accent);font-weight:600;font-size:1rem}
+.lb-table .username{font-weight:500;color:var(--text)}
+.lb-table .me td{background:rgba(226,183,20,0.06);border-left:2px solid var(--accent)}
+.lb-table .acc-val{color:#6fcf97}
+
+/* PROFILE */
+.profile-page{padding:1rem 0}
+.profile-header{display:flex;align-items:center;gap:1.5rem;margin-bottom:2rem}
+.avatar{width:64px;height:64px;border-radius:50%;background:var(--accent);color:#000;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700}
+.profile-name{font-size:1.5rem;font-weight:500;margin-bottom:4px}
+.profile-sub{color:var(--dim);font-size:0.85rem}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1rem}
+.stat-card .val{font-size:1.8rem;font-weight:300;color:var(--accent)}
+.stat-card .lbl{font-size:0.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.1em;margin-top:4px}
+.pb-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin:1rem 0}
+.pb-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.2rem}
+.pb-card .lang{font-size:0.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;font-family:'Noto Sans Devanagari',sans-serif}
+.pb-card .pb-wpm{font-size:2rem;font-weight:300;color:var(--accent)}
+.pb-card .pb-acc{font-size:0.8rem;color:#6fcf97;margin-top:2px}
+.chart-area{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.5rem;margin:1rem 0}
+.chart-title{font-size:0.75rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem}
+
+/* MINI CHART (SVG) */
+.mini-chart{width:100%;height:80px}
+
+/* CAPS WARNING */
+.caps-warning{background:rgba(202,71,84,0.15);border:1px solid var(--error);border-radius:6px;padding:8px 16px;font-size:0.8rem;color:var(--error);margin-bottom:1rem;display:none}
+.caps-warning.show{display:block}
+
+/* HINT PANEL */
+.hint-panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.5rem;margin:1rem 0;display:none}
+.hint-panel.show{display:block}
+.hint-title{font-size:0.75rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem}
+.hint-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:0.5rem}
+.hint-item{display:flex;align-items:center;gap:8px;font-size:0.8rem}
+.hint-key{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:0.7rem;color:var(--dim);white-space:nowrap}
+.hint-char{color:var(--accent);font-family:'Noto Sans Devanagari',sans-serif;font-size:1rem}
+
+/* PAGE NAV */
+.page-nav{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--border)}
+.page-nav-btn{background:none;border:none;color:var(--dim);cursor:pointer;font-family:inherit;font-size:0.85rem;padding:6px 0;border-bottom:2px solid transparent;transition:all 0.2s}
+.page-nav-btn:hover{color:var(--text)}
+.page-nav-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:1.5rem 0;text-align:center;color:var(--dim);font-size:0.75rem;margin-top:3rem}
+
+/* ANIMATIONS */
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.shake{animation:shake 0.2s ease}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 20px;font-size:0.85rem;z-index:1000;animation:fadeIn 0.3s ease;transition:opacity 0.3s}
+.toast.hide{opacity:0}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .app{padding:0 1rem}
+  .word-display{font-size:1.2rem;line-height:2rem}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<nav>
+  <div class="logo">
+    <span class="logo-icon">nT</span>
+    nepalitype
+  </div>
+  <div class="nav-links">
+    <button class="nav-btn" id="btn-leaderboard" onclick="showPage('leaderboard')">leaderboard</button>
+    <button class="nav-btn" id="btn-profile" onclick="showPage('profile')">profile</button>
+    <button class="nav-btn active" id="btn-home" onclick="showPage('home')">home</button>
+  </div>
+</nav>
+
+<!-- HOME PAGE -->
+<div id="page-home">
+
+<div class="caps-warning" id="caps-warning">⚠ Caps Lock is ON</div>
+
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;padding-top:1rem">
+  <div class="lang-tabs">
+    <button class="lang-tab active" onclick="setLang('english')">English</button>
+    <button class="lang-tab" onclick="setLang('preeti')">Preeti नेपाली</button>
+    <button class="lang-tab" onclick="setLang('romanized')">Romanized नेपाली</button>
+    <button class="lang-tab" onclick="setLang('unicode')">Unicode नेपाली</button>
+  </div>
+  <button class="nav-btn" id="hint-toggle" onclick="toggleHint()" style="font-size:0.8rem">⌨ keyboard hint</button>
+</div>
+
+<div class="tabs">
+  <div class="tab-group">
+    <button class="tab active" onclick="setMode('time','15')">15s</button>
+    <button class="tab" onclick="setMode('time','30')">30s</button>
+    <button class="tab" onclick="setMode('time','60')">60s</button>
+    <button class="tab" onclick="setMode('time','120')">120s</button>
+  </div>
+  <div class="tab-sep"></div>
+  <div class="tab-group">
+    <button class="tab" onclick="setMode('words','25')">25 words</button>
+    <button class="tab" onclick="setMode('words','50')">50 words</button>
+    <button class="tab" onclick="setMode('words','100')">100 words</button>
+  </div>
+  <div class="tab-sep"></div>
+  <div class="tab-group">
+    <button class="tab" onclick="setCustomTime()">custom</button>
+  </div>
+</div>
+
+<div class="hint-panel" id="hint-panel">
+  <div class="hint-title">Preeti Key Map — common keys</div>
+  <div class="hint-grid" id="hint-grid"></div>
+</div>
+
+<div style="display:flex;align-items:baseline;gap:3rem;padding:0.5rem 0;min-height:60px">
+  <div>
+    <div class="stat-big" id="live-timer">15</div>
+    <div class="stat-label" id="timer-label">seconds</div>
+  </div>
+  <div>
+    <div class="stat-big" id="live-wpm">-</div>
+    <div class="stat-label">wpm</div>
+  </div>
+  <div>
+    <div class="stat-big" id="live-acc">-</div>
+    <div class="stat-label">accuracy</div>
+  </div>
+</div>
+
+<div class="typing-container" id="typing-container" onclick="focusInput()">
+  <div class="word-display" id="word-display" style="font-family:'JetBrains Mono',monospace"></div>
+  <div class="typing-overlay"></div>
+  <input class="hidden-input" id="hidden-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+</div>
+
+<div style="text-align:center;color:var(--dim);font-size:0.75rem;margin-top:0.5rem">
+  <span style="background:var(--surface);padding:3px 10px;border-radius:4px;margin-right:8px">Tab</span> restart
+  &nbsp;&nbsp;
+  <span style="background:var(--surface);padding:3px 10px;border-radius:4px;margin-right:8px">Esc</span> stop
+</div>
+
+<div id="result-section" style="display:none"></div>
+
+</div>
+
+<!-- LEADERBOARD PAGE -->
+<div id="page-leaderboard" style="display:none">
+<div class="leaderboard-page">
+  <div style="padding:1rem 0 0.5rem">
+    <div style="font-size:1.2rem;font-weight:500;margin-bottom:1rem">leaderboard</div>
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.75rem">
+      <div class="lb-filters" id="lb-lang-filters">
+        <button class="lb-filter active" onclick="lbFilter('lang','english',this)">english</button>
+        <button class="lb-filter" onclick="lbFilter('lang','preeti',this)" style="font-family:'Noto Sans Devanagari',sans-serif">preeti नेपाली</button>
+        <button class="lb-filter" onclick="lbFilter('lang','romanized',this)" style="font-family:'Noto Sans Devanagari',sans-serif">romanized नेपाली</button>
+        <button class="lb-filter" onclick="lbFilter('lang','unicode',this)" style="font-family:'Noto Sans Devanagari',sans-serif">unicode नेपाली</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem">
+      <div class="lb-filters" id="lb-time-filters">
+        <button class="lb-filter active" onclick="lbFilter('duration','15',this)">15s</button>
+        <button class="lb-filter" onclick="lbFilter('duration','30',this)">30s</button>
+        <button class="lb-filter" onclick="lbFilter('duration','60',this)">60s</button>
+        <button class="lb-filter" onclick="lbFilter('duration','120',this)">120s</button>
+      </div>
+      <div class="tab-sep" style="margin:0 0.25rem"></div>
+      <div class="lb-filters" id="lb-period-filters">
+        <button class="lb-filter active" onclick="lbFilter('period','all',this)">all time</button>
+        <button class="lb-filter" onclick="lbFilter('period','monthly',this)">monthly</button>
+        <button class="lb-filter" onclick="lbFilter('period','weekly',this)">weekly</button>
+        <button class="lb-filter" onclick="lbFilter('period','daily',this)">daily</button>
+      </div>
+    </div>
+  </div>
+  <div id="lb-content"></div>
+</div>
+</div>
+
+<!-- PROFILE PAGE -->
+<div id="page-profile" style="display:none">
+<div class="profile-page">
+  <div class="profile-header">
+    <div class="avatar">UD</div>
+    <div>
+      <div class="profile-name">iamdhruba</div>
+      <div class="profile-sub">Joined April 2026 · <span style="color:var(--accent)">5 day streak</span></div>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card"><div class="val">11</div><div class="lbl">tests started</div></div>
+    <div class="stat-card"><div class="val">5</div><div class="lbl">tests completed</div></div>
+    <div class="stat-card"><div class="val">109</div><div class="lbl">highest wpm</div></div>
+    <div class="stat-card"><div class="val">95%</div><div class="lbl">avg accuracy</div></div>
+    <div class="stat-card"><div class="val">84</div><div class="lbl">avg wpm</div></div>
+    <div class="stat-card"><div class="val">00:04:03</div><div class="lbl">time typing</div></div>
+  </div>
+
+  <div style="font-size:0.75rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.1em;margin:1.5rem 0 0.75rem">personal bests</div>
+  <div class="pb-grid">
+    <div class="pb-card"><div class="lang">English</div><div class="pb-wpm">109 <span style="font-size:0.9rem">wpm</span></div><div class="pb-acc">100% accuracy · 15s</div></div>
+    <div class="pb-card"><div class="lang">Preeti नेपाली</div><div class="pb-wpm">— <span style="font-size:0.9rem;color:var(--dim)">no tests yet</span></div><div class="pb-acc" style="color:var(--dim)">—</div></div>
+    <div class="pb-card"><div class="lang">Romanized नेपाली</div><div class="pb-wpm">— <span style="font-size:0.9rem;color:var(--dim)">no tests yet</span></div><div class="pb-acc" style="color:var(--dim)">—</div></div>
+    <div class="pb-card"><div class="lang">Unicode नेपाली</div><div class="pb-wpm">— <span style="font-size:0.9rem;color:var(--dim)">no tests yet</span></div><div class="pb-acc" style="color:var(--dim)">—</div></div>
+  </div>
+
+  <div class="chart-area">
+    <div class="chart-title">wpm over time (last 10 tests)</div>
+    <canvas id="profile-chart" height="120"></canvas>
+  </div>
+
+  <div style="font-size:0.75rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.1em;margin:1.5rem 0 0.75rem">recent results</div>
+  <div id="recent-results"></div>
+</div>
+</div>
+
+<footer>nepalitype · designed for nepali typists · Tab to restart · built with ❤ in kathmandu</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+// ============================================================
+// WORD LISTS
+// ============================================================
+const WORD_LISTS = {
+  english: ["the","be","to","of","and","a","in","that","have","it","for","not","on","with","he","as","you","do","at","this","but","his","by","from","they","we","say","her","she","or","an","will","my","one","all","would","there","their","what","so","up","out","if","about","who","get","which","go","me","when","make","can","like","time","no","just","him","know","take","people","into","year","your","good","some","could","them","see","other","than","then","now","look","only","come","its","over","think","also","back","after","use","two","how","our","work","first","well","way","even","new","want","because","any","these","give","day","most","us","great","between","need","large","often","hand","high","place","hold","turn","set","put","end","does","another","well","old","few","those","always","show","large"],
+  preeti: ["k|tf","dflg","bf]/f","dfG5]","3/","ufpF","b]z","g]kfn","k|]d","uf]7","o'/f]kf","cf]h/","kfgL","rf]v","uf]nf","xfjf","lsgf/f","bfpF/f","xf]tfsL","s]6f","s]6L","bfO","bLbL","ef]nL","lxHh]","j/k/","uf]7fn","zlgjf/","laxLjf/","cfOtjf/","cfuf]","cfpg","hfg","v]Ng","ufpg","gfr","s]6f","hfbf","7fpF","x]g{"],
+  romanized: ["namaste","Nepal","paani","ghar","man","desh","premi","sato","suna","hawa","roti","dal","bhat","chiya","dudh","khana","pani","sadak","bato","manche","kehi","kohi","haina","chha","thiyo","garnu","kaam","thau","samay","din","rat","bihaan","beluka","bholi","hijo","aaja","saal","mahina","haftaa","aauna","jaanu","khanu","piunu","sounu","bolnu","sunnu","dekhnu","linu","dinu","khel"],
+  unicode: ["नमस्ते","पानी","घर","मान्छे","देश","प्रेम","सात","सुन","हावा","रोटी","दाल","भात","चिया","दूध","खाना","पानी","सडक","बाटो","केही","कोही","छ","थियो","काम","ठाउँ","समय","दिन","रात","बिहान","बेलुका","भोलि","हिजो","आज","साल","महिना","हप्ता","आउनु","जानु","खानु","पिउनु","सुत्नु","बोल्नु","सुन्नु","देख्नु","लिनु","दिनु","खेल","मन","दिल","प्यार","राम्रो"]
+};
+
+const PREETI_MAP = {
+  's':'क','v':'ख','u':'ग','3':'घ','r':'च','5':'छ','h':'ज','t':'त','y':'थ','b':'द','w':'ध','g':'न','k':'प','k+m':'फ','a':'ब','e':'म','o':'य','/':'र','n':'ल','j':'व','z':'श','i+f':'ष',';':'स','x':'ह','c':'अ','c+f':'आ','O':'इ','O+{':'ई','p':'उ','p+m':'ऊ','C':'ऋ','P':'ए','P+]':'ऐ','c+f]':'ओ','cf}':'औ','Q':'क्ष','Q+m':'ज्ञ','l':'त्र','b+[':'द्व'
+};
+
+const ROMANIZED_MAP = [
+  {from:"ksha",to:"क्ष"},{from:"gya",to:"ज्ञ"},{from:"tra",to:"त्र"},{from:"shr",to:"श्र"},
+  {from:"kh",to:"ख"},{from:"gh",to:"घ"},{from:"chh",to:"छ"},{from:"ch",to:"च"},
+  {from:"jh",to:"झ"},{from:"Th",to:"ठ"},{from:"th",to:"थ"},{from:"Dh",to:"ढ"},
+  {from:"dh",to:"ध"},{from:"ph",to:"फ"},{from:"bh",to:"भ"},{from:"Sh",to:"ष"},
+  {from:"sh",to:"श"},{from:"aa",to:"आ"},{from:"ii",to:"ई"},{from:"uu",to:"ऊ"},
+  {from:"ai",to:"ऐ"},{from:"au",to:"औ"},{from:"ee",to:"ए"},{from:"ri",to:"ऋ"},
+  {from:"k",to:"क"},{from:"K",to:"ख"},{from:"g",to:"ग"},{from:"G",to:"घ"},
+  {from:"c",to:"च"},{from:"j",to:"ज"},{from:"T",to:"ट"},{from:"t",to:"त"},
+  {from:"D",to:"ड"},{from:"d",to:"द"},{from:"N",to:"ण"},{from:"n",to:"न"},
+  {from:"p",to:"प"},{from:"f",to:"फ"},{from:"b",to:"ब"},{from:"B",to:"भ"},
+  {from:"m",to:"म"},{from:"y",to:"य"},{from:"r",to:"र"},{from:"l",to:"ल"},
+  {from:"v",to:"व"},{from:"w",to:"व"},{from:"S",to:"श"},{from:"s",to:"स"},
+  {from:"h",to:"ह"},{from:"x",to:"क्ष"},
+  {from:"a",to:"अ"},{from:"i",to:"इ"},{from:"u",to:"उ"},{from:"e",to:"ए"},{from:"o",to:"ओ"},
+  {from:"M",to:"ं"},{from:"H",to:"ः"},{from:"^",to:"ँ"},
+  {from:"0",to:"०"},{from:"1",to:"१"},{from:"2",to:"२"},{from:"3",to:"३"},
+  {from:"4",to:"४"},{from:"5",to:"५"},{from:"6",to:"६"},{from:"7",to:"७"},
+  {from:"8",to:"८"},{from:"9",to:"९"}
+];
+
+function romanToUnicode(input) {
+  let result = "", i = 0;
+  while (i < input.length) {
+    let matched = false;
+    for (const {from, to} of ROMANIZED_MAP) {
+      if (input.slice(i).startsWith(from)) {
+        result += to; i += from.length; matched = true; break;
+      }
+    }
+    if (!matched) { result += input[i]; i++; }
+  }
+  return result;
+}
+
+// ============================================================
+// STATE
+// ============================================================
+let state = {
+  page: 'home',
+  lang: 'english',
+  mode: 'time',
+  duration: 15,
+  words: [],
+  wordIndex: 0,
+  charIndex: 0,
+  typed: [],
+  wpmHistory: [],
+  timer: null,
+  elapsed: 0,
+  started: false,
+  finished: false,
+  totalCorrect: 0,
+  totalTyped: 0,
+  capsOn: false,
+  altBuffer: '',
+  altHeld: false,
+  lbLang: 'english',
+  lbDuration: '15',
+  lbPeriod: 'all'
+};
+
+// ============================================================
+// LEADERBOARD DATA (simulated)
+// ============================================================
+const LB_DATA = {
+  english: {
+    '15': {
+      all: [
+        {u:'TyperNinja',wpm:142,acc:99.1,con:95,date:'Apr 23'},
+        {u:'QwertyKing',wpm:138,acc:98.7,con:93,date:'Apr 22'},
+        {u:'FastFingers',wpm:131,acc:97.2,con:91,date:'Apr 21'},
+        {u:'iamdhruba',wpm:109,acc:100,con:90,date:'Apr 23',me:true},
+        {u:'NepalTypist',wpm:98,acc:96.5,con:87,date:'Apr 20'},
+        {u:'SpeedDemon',wpm:95,acc:95.1,con:85,date:'Apr 19'},
+        {u:'KeyboardPro',wpm:91,acc:94.0,con:82,date:'Apr 18'},
+        {u:'TypoFree',wpm:87,acc:93.5,con:80,date:'Apr 17'},
+        {u:'RapidType',wpm:84,acc:92.0,con:79,date:'Apr 16'},
+        {u:'QuickKey',wpm:80,acc:91.2,con:77,date:'Apr 15'},
+      ],
+      weekly: [{u:'iamdhruba',wpm:109,acc:100,con:90,date:'Apr 23',me:true},{u:'TyperNinja',wpm:105,acc:98,con:88,date:'Apr 22'},{u:'QwertyKing',wpm:101,acc:97,con:85,date:'Apr 21'}],
+      monthly: [{u:'TyperNinja',wpm:142,acc:99.1,con:95,date:'Apr 23'},{u:'iamdhruba',wpm:109,acc:100,con:90,date:'Apr 23',me:true},{u:'FastFingers',wpm:131,acc:97.2,con:91,date:'Apr 21'}],
+      daily: [{u:'iamdhruba',wpm:109,acc:100,con:90,date:'today',me:true},{u:'QwertyKing',wpm:95,acc:97,con:85,date:'today'}]
+    },
+    '30': {all:[{u:'TyperNinja',wpm:135,acc:98.5,con:94,date:'Apr 22'},{u:'iamdhruba',wpm:94,acc:99.58,con:83,date:'Apr 23',me:true},{u:'FastFingers',wpm:128,acc:96.8,con:90,date:'Apr 21'},{u:'QwertyKing',wpm:120,acc:97.1,con:88,date:'Apr 20'}],weekly:[],monthly:[],daily:[]},
+    '60': {all:[{u:'TyperNinja',wpm:128,acc:97.9,con:93,date:'Apr 22'},{u:'iamdhruba',wpm:80,acc:96.69,con:68,date:'Apr 23',me:true},{u:'FastFingers',wpm:121,acc:96.1,con:89,date:'Apr 21'}],weekly:[],monthly:[],daily:[]},
+    '120': {all:[{u:'TyperNinja',wpm:119,acc:97.2,con:91,date:'Apr 20'},{u:'FastFingers',wpm:112,acc:95.8,con:88,date:'Apr 19'}],weekly:[],monthly:[],daily:[]}
+  },
+  preeti:{
+    '15':{all:[{u:'PreetiMaster',wpm:89,acc:97,con:88,date:'Apr 22'},{u:'NepaliTyper',wpm:78,acc:95,con:82,date:'Apr 21'},{u:'iamdhruba',wpm:0,acc:0,con:0,date:'—',me:true,unplayed:true}],weekly:[],monthly:[],daily:[]},
+    '30':{all:[{u:'PreetiMaster',wpm:84,acc:96,con:86,date:'Apr 21'}],weekly:[],monthly:[],daily:[]},
+    '60':{all:[{u:'NepaliTyper',wpm:79,acc:95,con:85,date:'Apr 20'}],weekly:[],monthly:[],daily:[]},
+    '120':{all:[],weekly:[],monthly:[],daily:[]}
+  },
+  romanized:{
+    '15':{all:[{u:'RomTyper',wpm:95,acc:96,con:90,date:'Apr 22'},{u:'PhoneticPro',wpm:88,acc:94,con:85,date:'Apr 21'}],weekly:[],monthly:[],daily:[]},
+    '30':{all:[],weekly:[],monthly:[],daily:[]},
+    '60':{all:[],weekly:[],monthly:[],daily:[]},
+    '120':{all:[],weekly:[],monthly:[],daily:[]}
+  },
+  unicode:{
+    '15':{all:[{u:'DevaMaster',wpm:72,acc:95,con:85,date:'Apr 22'}],weekly:[],monthly:[],daily:[]},
+    '30':{all:[],weekly:[],monthly:[],daily:[]},
+    '60':{all:[],weekly:[],monthly:[],daily:[]},
+    '120':{all:[],weekly:[],monthly:[],daily:[]}
+  }
+};
+
+// ============================================================
+// CORE TYPING ENGINE
+// ============================================================
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function getWords() {
+  const list = WORD_LISTS[state.lang];
+  const shuffled = shuffle(list);
+  const count = state.mode === 'words' ? state.duration : 80;
+  const result = [];
+  while (result.length < count) result.push(...shuffled);
+  return result.slice(0, Math.max(count, 80));
+}
+
+function initTest() {
+  state.words = getWords();
+  state.wordIndex = 0;
+  state.charIndex = 0;
+  state.typed = state.words.map(() => '');
+  state.wpmHistory = [];
+  state.elapsed = 0;
+  state.started = false;
+  state.finished = false;
+  state.totalCorrect = 0;
+  state.totalTyped = 0;
+  clearInterval(state.timer);
+  
+  const font = state.lang === 'english' ? "'JetBrains Mono',monospace" : "'Noto Sans Devanagari',sans-serif";
+  document.getElementById('word-display').style.fontFamily = font;
+  document.getElementById('result-section').style.display = 'none';
+  document.getElementById('typing-container').style.display = 'block';
+  updateTimerDisplay();
+  renderWords();
+  document.getElementById('live-wpm').textContent = '-';
+  document.getElementById('live-acc').textContent = '-';
+  focusInput();
+}
+
+function renderWords() {
+  const display = document.getElementById('word-display');
+  let html = '';
+  const visible = state.words.slice(0, Math.min(state.words.length, 60));
+  
+  visible.forEach((word, wi) => {
+    const isActive = wi === state.wordIndex;
+    const typed = state.typed[wi] || '';
+    let wordHtml = '';
+    
+    const maxLen = Math.max(word.length, typed.length);
+    for (let ci = 0; ci < maxLen; ci++) {
+      const expected = word[ci] || '';
+      const actual = typed[ci] || '';
+      let cls = 'char pending';
+      
+      if (ci < typed.length) {
+        cls = actual === expected ? 'char correct' : 'char incorrect';
+        if (ci >= word.length) cls = 'char extra';
+      } else if (isActive && ci === state.charIndex) {
+        cls = 'char current';
+      }
+      
+      const display_char = ci < word.length ? word[ci] : actual;
+      wordHtml += `<span class="${cls}">${display_char || '&nbsp;'}</span>`;
+    }
+    
+    html += `<span class="word${isActive?' current':''}" data-wi="${wi}">${wordHtml}</span>`;
+  });
+  
+  display.innerHTML = html;
+  scrollToCurrentWord();
+}
+
+function scrollToCurrentWord() {
+  const display = document.getElementById('word-display');
+  const current = display.querySelector('.word.current');
+  if (!current) return;
+  const containerTop = display.getBoundingClientRect().top;
+  const wordTop = current.getBoundingClientRect().top;
+  const offset = wordTop - containerTop;
+  if (offset > display.clientHeight * 0.6) {
+    display.scrollTop += offset - display.clientHeight * 0.3;
+  }
+  if (offset < 0) display.scrollTop = 0;
+}
+
+function startTimer() {
+  if (state.started) return;
+  state.started = true;
+  const startTime = Date.now();
+  const targetDuration = state.mode === 'time' ? state.duration : null;
+  let lastWpmTime = 0;
+  
+  state.timer = setInterval(() => {
+    state.elapsed = Math.floor((Date.now() - startTime) / 1000);
+    
+    if (targetDuration) {
+      const remaining = targetDuration - state.elapsed;
+      document.getElementById('live-timer').textContent = Math.max(0, remaining);
+      if (remaining <= 0) { endTest(); return; }
+    } else {
+      document.getElementById('live-timer').textContent = state.elapsed;
+    }
+    
+    if (state.elapsed > lastWpmTime) {
+      lastWpmTime = state.elapsed;
+      const wpm = calcWPM();
+      state.wpmHistory.push(wpm);
+    }
+    
+    updateLiveStats();
+  }, 200);
+}
+
+function calcWPM() {
+  if (state.elapsed === 0) return 0;
+  return Math.round((state.totalCorrect / 5) / (state.elapsed / 60));
+}
+
+function calcAccuracy() {
+  if (state.totalTyped === 0) return 0;
+  return Math.round((state.totalCorrect / state.totalTyped) * 100);
+}
+
+function updateLiveStats() {
+  document.getElementById('live-wpm').textContent = calcWPM();
+  document.getElementById('live-acc').textContent = calcAccuracy() + '%';
+}
+
+function updateTimerDisplay() {
+  const val = state.mode === 'time' ? state.duration : (state.mode === 'words' ? state.duration + 'w' : state.duration);
+  document.getElementById('live-timer').textContent = val;
+  document.getElementById('timer-label').textContent = state.mode === 'time' ? 'seconds' : 'words';
+}
+
+function endTest() {
+  clearInterval(state.timer);
+  state.finished = true;
+  
+  const wpm = calcWPM();
+  const acc = calcAccuracy();
+  const raw = Math.round((state.totalTyped / 5) / Math.max(state.elapsed / 60, 0.01));
+  
+  const wpmVals = state.wpmHistory.filter(v => v > 0);
+  let consistency = 100;
+  if (wpmVals.length > 1) {
+    const mean = wpmVals.reduce((a,b)=>a+b,0)/wpmVals.length;
+    const variance = wpmVals.reduce((a,b)=>a+(b-mean)**2,0)/wpmVals.length;
+    const stddev = Math.sqrt(variance);
+    consistency = Math.max(0, Math.round(100 - (stddev/mean*100)));
+  }
+  
+  showResult({wpm, raw, acc, consistency, elapsed: state.elapsed});
+}
+
+function showResult({wpm, raw, acc, consistency, elapsed}) {
+  document.getElementById('typing-container').style.display = 'none';
+  const rs = document.getElementById('result-section');
+  rs.style.display = 'block';
+  
+  const correct = state.totalCorrect;
+  const incorrect = state.totalTyped - state.totalCorrect;
+  const totalPossible = correct + incorrect + 1;
+  const cPct = Math.round((correct/Math.max(totalPossible,1))*100);
+  const ePct = Math.round((incorrect/Math.max(totalPossible,1))*100);
+  
+  rs.innerHTML = `
+    <div class="result-card">
+      <div class="result-grid">
+        <div class="result-stat"><div class="val">${wpm}</div><div class="unit">wpm</div><div class="lbl">speed</div></div>
+        <div class="result-stat correct"><div class="val">${acc}%</div><div class="lbl">accuracy</div></div>
+        <div class="result-stat"><div class="val">${raw}</div><div class="unit">wpm</div><div class="lbl">raw</div></div>
+        <div class="result-stat"><div class="val">${consistency}%</div><div class="lbl">consistency</div></div>
+        <div class="result-stat"><div class="val">${elapsed}s</div><div class="lbl">time</div></div>
+        <div class="result-stat correct"><div class="val">${correct}</div><div class="lbl">correct chars</div></div>
+        <div class="result-stat error"><div class="val">${incorrect}</div><div class="lbl">errors</div></div>
+      </div>
+      <div style="margin:1rem 0">
+        <div style="font-size:0.7rem;color:var(--dim);margin-bottom:4px">character accuracy</div>
+        <div class="char-bar">
+          <div class="char-bar-correct" style="flex:${cPct}"></div>
+          <div class="char-bar-error" style="flex:${ePct}"></div>
+          <div class="char-bar-space" style="flex:${Math.max(0,100-cPct-ePct)}"></div>
+        </div>
+      </div>
+      <div class="result-actions">
+        <button class="btn primary" onclick="initTest()">↺ restart</button>
+        <button class="btn" onclick="showPage('leaderboard')">leaderboard</button>
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+// INPUT HANDLING
+// ============================================================
+const input = document.getElementById('hidden-input');
+
+input.addEventListener('keydown', (e) => {
+  if (state.finished) return;
+  
+  // Caps lock
+  if (e.getModifierState && e.getModifierState('CapsLock')) {
+    document.getElementById('caps-warning').classList.add('show');
+  } else {
+    document.getElementById('caps-warning').classList.remove('show');
+  }
+  
+  if (e.key === 'Tab') { e.preventDefault(); initTest(); return; }
+  if (e.key === 'Escape') { clearInterval(state.timer); initTest(); return; }
+  
+  if (e.key === 'Backspace') {
+    e.preventDefault();
+    if (state.charIndex > 0) {
+      state.charIndex--;
+      const word = state.typed[state.wordIndex];
+      state.typed[state.wordIndex] = word.slice(0, state.charIndex);
+    }
+    renderWords();
+    return;
+  }
+  
+  if (e.key === ' ' || e.key === 'Space') {
+    e.preventDefault();
+    if (state.charIndex > 0) {
+      const typed = state.typed[state.wordIndex];
+      const word = state.words[state.wordIndex];
+      
+      // count chars
+      for (let i = 0; i < Math.max(typed.length, word.length); i++) {
+        state.totalTyped++;
+        if (typed[i] === word[i]) state.totalCorrect++;
+      }
+      
+      state.wordIndex++;
+      state.charIndex = 0;
+      
+      if (state.mode === 'words' && state.wordIndex >= state.duration) {
+        endTest(); return;
+      }
+      
+      if (!state.started) startTimer();
+      renderWords();
+    }
+    return;
+  }
+  
+  if (e.key.length === 1) {
+    e.preventDefault();
+    if (!state.started) startTimer();
+    
+    const ch = e.key;
+    state.typed[state.wordIndex] = (state.typed[state.wordIndex] || '') + ch;
+    state.charIndex++;
+    renderWords();
+  }
+});
+
+function focusInput() {
+  document.getElementById('hidden-input').focus();
+}
+
+// ============================================================
+// PAGE / MODE / LANG SWITCHING
+// ============================================================
+function showPage(page) {
+  ['home','leaderboard','profile'].forEach(p => {
+    document.getElementById(`page-${p}`).style.display = p === page ? 'block' : 'none';
+  });
+  ['btn-home','btn-leaderboard','btn-profile'].forEach(b => {
+    document.getElementById(b).classList.toggle('active', b === `btn-${page}`);
+  });
+  state.page = page;
+  if (page === 'leaderboard') renderLeaderboard();
+  if (page === 'profile') renderProfile();
+  if (page === 'home') focusInput();
+}
+
+function setLang(lang) {
+  state.lang = lang;
+  document.querySelectorAll('.lang-tab').forEach((t,i) => {
+    t.classList.toggle('active', ['english','preeti','romanized','unicode'][i] === lang);
+  });
+  initTest();
+}
+
+function setMode(mode, val) {
+  state.mode = mode;
+  state.duration = parseInt(val);
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  initTest();
+}
+
+function setCustomTime() {
+  const t = prompt('Enter custom time (seconds):', '45');
+  if (t && !isNaN(t) && parseInt(t) > 0) {
+    state.mode = 'time';
+    state.duration = parseInt(t);
+    initTest();
+  }
+}
+
+// ============================================================
+// LEADERBOARD
+// ============================================================
+function lbFilter(type, val, btn) {
+  if (type === 'lang') state.lbLang = val;
+  if (type === 'duration') state.lbDuration = val;
+  if (type === 'period') state.lbPeriod = val;
+  
+  const group = btn.parentElement;
+  group.querySelectorAll('.lb-filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderLeaderboard();
+}
+
+function renderLeaderboard() {
+  const data = (LB_DATA[state.lbLang]?.[state.lbDuration]?.[state.lbPeriod]) || [];
+  const content = document.getElementById('lb-content');
+  
+  if (!data.length) {
+    content.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--dim)">no results yet for this combination</div>`;
+    return;
+  }
+  
+  const ranks = ['🥇','🥈','🥉'];
+  let rows = data.map((r, i) => {
+    const medal = i < 3 ? ranks[i] : (i+1);
+    const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+    const isMe = r.me && !r.unplayed;
+    const accent = isMe ? ' class="me"' : '';
+    
+    if (r.unplayed) {
+      return `<tr${accent}>
+        <td><span class="rank ${rankClass}">${medal}</span></td>
+        <td class="username">${r.u} <span style="color:var(--accent);font-size:0.7rem">you</span></td>
+        <td class="wpm-val" style="color:var(--dim)">—</td>
+        <td style="color:var(--dim)">—</td>
+        <td style="color:var(--dim)">—</td>
+        <td style="color:var(--dim)">no tests</td>
+      </tr>`;
+    }
+    
+    return `<tr${accent}>
+      <td><span class="rank ${rankClass}">${medal}</span></td>
+      <td class="username">${r.u}${isMe ? ' <span style="color:var(--accent);font-size:0.7rem">you</span>' : ''}</td>
+      <td class="wpm-val">${r.wpm}</td>
+      <td class="acc-val">${r.acc}%</td>
+      <td style="color:var(--dim)">${r.con}%</td>
+      <td style="color:var(--dim);font-size:0.8rem">${r.date}</td>
+    </tr>`;
+  }).join('');
+  
+  content.innerHTML = `
+    <table class="lb-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>username</th>
+          <th>wpm</th>
+          <th>accuracy</th>
+          <th>consistency</th>
+          <th>date</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div style="text-align:center;color:var(--dim);font-size:0.75rem;padding:1.5rem 0">
+      showing top ${data.length} results · ${state.lbLang} · ${state.lbDuration}s · ${state.lbPeriod}
+    </div>
+  `;
+}
+
+// ============================================================
+// PROFILE CHART
+// ============================================================
+let profileChart = null;
+
+function renderProfile() {
+  const recentData = [
+    {wpm:89,acc:96.69,mode:'60s',date:'Apr 24'},
+    {wpm:72,acc:93.59,mode:'60s',date:'Apr 24'},
+    {wpm:66,acc:89.97,mode:'60s',date:'Apr 24'},
+    {wpm:109,acc:100,mode:'15s',date:'Apr 23'},
+    {wpm:94,acc:99.58,mode:'30s',date:'Apr 23'},
+  ];
+  
+  const rr = document.getElementById('recent-results');
+  rr.innerHTML = `
+    <table class="lb-table" style="font-size:0.85rem">
+      <thead><tr><th>wpm</th><th>raw</th><th>accuracy</th><th>mode</th><th>date</th></tr></thead>
+      <tbody>
+        ${recentData.map(r=>`<tr>
+          <td class="wpm-val">${r.wpm}</td>
+          <td style="color:var(--dim)">${r.wpm}</td>
+          <td class="acc-val">${r.acc}%</td>
+          <td style="color:var(--dim)">${r.mode}</td>
+          <td style="color:var(--dim);font-size:0.75rem">${r.date}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  `;
+  
+  setTimeout(() => {
+    const ctx = document.getElementById('profile-chart');
+    if (!ctx) return;
+    if (profileChart) profileChart.destroy();
+    
+    profileChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Apr 23','Apr 23','Apr 24','Apr 24','Apr 24'],
+        datasets: [{
+          label: 'WPM',
+          data: [109,94,89,72,66],
+          borderColor: '#e2b714',
+          backgroundColor: 'rgba(226,183,20,0.08)',
+          borderWidth: 2,
+          pointBackgroundColor: '#e2b714',
+          pointRadius: 4,
+          fill: true,
+          tension: 0.4
+        },{
+          label: 'Accuracy %',
+          data: [100,99.58,96.69,93.59,89.97],
+          borderColor: '#6fcf97',
+          backgroundColor: 'transparent',
+          borderWidth: 1.5,
+          pointRadius: 3,
+          borderDash: [4,4],
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {labels: {color: '#646669', font: {family: 'JetBrains Mono', size: 11}}},
+          tooltip: {
+            backgroundColor: '#2a2a2e',
+            borderColor: '#3a3a3e',
+            borderWidth: 1,
+            titleColor: '#d1d0c5',
+            bodyColor: '#646669'
+          }
+        },
+        scales: {
+          x: {ticks:{color:'#646669',font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'}},
+          y: {ticks:{color:'#646669',font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'},min:0,max:120}
+        }
+      }
+    });
+  }, 100);
+}
+
+// ============================================================
+// KEYBOARD HINT PANEL
+// ============================================================
+function toggleHint() {
+  const panel = document.getElementById('hint-panel');
+  panel.classList.toggle('show');
+  if (panel.classList.contains('show')) renderHint();
+}
+
+function renderHint() {
+  const grid = document.getElementById('hint-grid');
+  const items = Object.entries(PREETI_MAP).slice(0,24);
+  grid.innerHTML = items.map(([k,v]) => `
+    <div class="hint-item">
+      <span class="hint-key">${k}</span>
+      <span style="color:var(--dim)">→</span>
+      <span class="hint-char">${v}</span>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function toast(msg, duration=2500) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.classList.add('hide'); setTimeout(()=>t.remove(),300); }, duration);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+initTest();
+document.getElementById('hidden-input').addEventListener('focus', () => {
+  document.getElementById('typing-container').style.outline = 'none';
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Tab') e.preventDefault();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MONOLITH | PERFORMANCE ANALYSIS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#d30026",
+                        "surface-dim": "#080909",
+                        "surface-container-low": "#111313",
+                        "on-surface": "#e3e2e2",
+                    },
+                    "fontFamily": {
+                        "manrope": ["Manrope", "sans-serif"],
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #080909;
+            color: #e3e2e2;
+            font-family: 'Manrope', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+        }
+        .grid-bg {
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(211, 0, 38, 0.05) 0%, transparent 50%),
+                linear-gradient(to right, #141616 1px, transparent 1px),
+                linear-gradient(to bottom, #141616 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+        }
+        .graph-line {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: dash 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        @keyframes dash {
+            to { stroke-dashoffset: 0; }
+        }
+        .wpm-pulse {
+            animation: pulse-glow 4s ease-in-out infinite;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { filter: drop-shadow(0 0 10px rgba(211, 0, 38, 0)); }
+            50% { filter: drop-shadow(0 0 25px rgba(211, 0, 38, 0.4)); }
+        }
+        .bg-noise {
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3Base-filter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/feTurbulence%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+        }
+        .text-glow {
+            text-shadow: 0 0 20px rgba(211, 0, 38, 0.5);
+        }
+        .divider-fade {
+            background: linear-gradient(to right, transparent, #1f2121, transparent);
+        }
+    </style>
+</head>
+<body class="selection:bg-primary-container selection:text-white overflow-x-hidden relative min-h-screen">
+<div class="fixed inset-0 bg-noise pointer-events-none"></div>
+<!-- Top Navigation -->
+<nav class="bg-black/80 backdrop-blur-xl border-b border-white/5 flex justify-between items-center w-full px-12 py-6 fixed z-50">
+<div class="text-2xl font-black tracking-tighter text-primary-container">MONOLITH</div>
+<div class="flex items-center gap-10">
+<div class="hidden md:flex gap-8 items-center">
+<a class="uppercase tracking-[0.2em] text-[10px] font-bold text-zinc-500 hover:text-zinc-200 transition-colors" href="#">Practice</a>
+<a class="uppercase tracking-[0.2em] text-[10px] font-bold text-primary-container border-b border-primary-container pb-1" href="#">Leaderboards</a>
+<a class="uppercase tracking-[0.2em] text-[10px] font-bold text-zinc-500 hover:text-zinc-200 transition-colors" href="#">Analytics</a>
+<a class="uppercase tracking-[0.2em] text-[10px] font-bold text-zinc-500 hover:text-zinc-200 transition-colors" href="#">Settings</a>
+</div>
+<div class="flex items-center gap-4 border-l border-white/10 pl-10">
+<span class="material-symbols-outlined text-zinc-500 hover:text-white cursor-pointer transition-all">history</span>
+<div class="flex items-center gap-3 px-3 py-1.5 rounded-sm hover:bg-white/5 transition-all cursor-pointer">
+<span class="uppercase tracking-[0.2em] text-[10px] font-bold text-zinc-300">Profile</span>
+<div class="w-6 h-6 bg-zinc-800 rounded-full overflow-hidden ring-1 ring-white/10">
+<img alt="User" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0C24G9HxGbGBxC1qi5vyh0AgWuYFPh9aT65zJtTOMXNZaCIqqfWUKJ1sGHZmTHg2sPZPhRllBk_kjzEsZRYe4z2eDsGhNr39a8DDWQzzPNrxbODnq3hulKyd2Acq7HRZ2TILDLbXRN5oQEd161tflqBOMGOxk1G2L4FCdC-sNHEMaJmGYyeMWxlGJCFdrbPq5yX4IeSpuitCPsuWDQtOFPJhipKLvOfDzZ1R2tK4r97By8sIHb13gweCF84z5ixuvZf-RoiQkmwQ4"/>
+</div>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Canvas -->
+<main class="pt-40 pb-24 max-w-7xl mx-auto px-12 grid-bg relative">
+<!-- Hero Score -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-20">
+<div class="space-y-2">
+<div class="flex items-center gap-3">
+<span class="w-8 h-[1px] bg-primary-container"></span>
+<span class="uppercase tracking-[0.4em] text-[11px] font-black text-primary-container">PERFORMANCE DIAGNOSTIC</span>
+</div>
+<h1 class="text-6xl md:text-8xl font-extrabold tracking-tight uppercase leading-none">Session Complete</h1>
+</div>
+<div class="mt-8 md:mt-0 flex flex-col items-end">
+<div class="relative group">
+<div class="absolute -inset-4 bg-primary-container/20 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 wpm-pulse"></div>
+<div class="relative flex items-baseline gap-4">
+<span class="text-9xl font-black text-white text-glow tracking-tighter leading-none">48</span>
+<span class="text-2xl font-bold text-zinc-600 uppercase tracking-widest">WPM</span>
+</div>
+</div>
+<div class="w-full h-[2px] bg-primary-container mt-4 origin-right"></div>
+<span class="mt-2 uppercase tracking-[0.2em] text-[10px] font-medium text-zinc-500">Global Percentile: Top 12%</span>
+</div>
+</div>
+<!-- Metrics Grid -->
+<div class="grid grid-cols-12 gap-8 mb-20">
+<!-- Technical Breakdown Column -->
+<div class="col-span-12 lg:col-span-3 space-y-12">
+<!-- Borderless Sub-metrics -->
+<div class="space-y-8">
+<div class="group">
+<span class="uppercase tracking-[0.3em] text-[10px] font-bold text-zinc-600 group-hover:text-zinc-400 transition-colors">Accuracy</span>
+<div class="flex items-baseline gap-1">
+<span class="text-5xl font-extrabold text-zinc-100">85</span>
+<span class="text-xl font-bold text-zinc-600">%</span>
+</div>
+<div class="w-full h-[1px] bg-zinc-900 mt-4 group-hover:bg-zinc-800 transition-colors"></div>
+</div>
+<div class="group">
+<span class="uppercase tracking-[0.3em] text-[10px] font-bold text-zinc-600 group-hover:text-zinc-400 transition-colors">Raw Velocity</span>
+<div class="flex items-baseline gap-2">
+<span class="text-5xl font-extrabold text-zinc-100">57</span>
+<span class="text-xl font-bold text-zinc-600">WPM</span>
+</div>
+<div class="w-full h-[1px] bg-zinc-900 mt-4 group-hover:bg-zinc-800 transition-colors"></div>
+</div>
+<div class="group">
+<span class="uppercase tracking-[0.3em] text-[10px] font-bold text-zinc-600 group-hover:text-zinc-400 transition-colors">Consistency</span>
+<div class="flex items-baseline gap-1">
+<span class="text-5xl font-extrabold text-zinc-100">59</span>
+<span class="text-xl font-bold text-zinc-600">%</span>
+</div>
+<div class="w-full h-[1px] bg-zinc-900 mt-4 group-hover:bg-zinc-800 transition-colors"></div>
+</div>
+</div>
+</div>
+<!-- Visualization Central -->
+<div class="col-span-12 lg:col-span-6 bg-[#0c0e0e] border border-white/5 p-10 relative overflow-hidden group">
+<!-- Visual Decoration -->
+<div class="absolute top-0 left-0 w-24 h-24 border-t border-l border-primary-container/30"></div>
+<div class="absolute top-4 left-4 text-[8px] font-mono text-zinc-700 uppercase tracking-widest">Buffer_Stream: ACTIVE</div>
+<div class="flex justify-between items-start mb-12">
+<div>
+<h3 class="uppercase tracking-[0.3em] text-[11px] font-black text-zinc-400">Velocity Flux Map</h3>
+<p class="text-[10px] text-zinc-600 mt-1 uppercase tracking-widest">Real-time word output variance</p>
+</div>
+<div class="flex gap-6">
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-primary-container"></div>
+<span class="uppercase tracking-widest text-[9px] font-bold text-zinc-500">WPM</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-zinc-700"></div>
+<span class="uppercase tracking-widest text-[9px] font-bold text-zinc-500">ERRORS</span>
+</div>
+</div>
+</div>
+<!-- High Fidelity Graph -->
+<div class="h-64 relative w-full mt-8">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 800 200">
+<!-- Horizontal Grid Lines -->
+<line class="stroke-white/5" stroke-dasharray="4 4" x1="0" x2="800" y1="0" y2="0"></line>
+<line class="stroke-white/5" stroke-dasharray="4 4" x1="0" x2="800" y1="100" y2="100"></line>
+<line class="stroke-white/5" stroke-dasharray="4 4" x1="0" x2="800" y1="200" y2="200"></line>
+<!-- Area Fill -->
+<path d="M0,180 Q100,140 200,120 T400,150 T600,80 T800,40 V200 H0 Z" fill="url(#area-gradient)" opacity="0.4"></path>
+<!-- Primary WPM Line -->
+<path class="graph-line" d="M0,180 Q100,140 200,120 T400,150 T600,80 T800,40" fill="none" stroke="#D30026" stroke-width="2.5"></path>
+<!-- Secondary Error Axis points -->
+<circle cx="200" cy="120" fill="#fff" r="2.5"></circle>
+<circle cx="400" cy="150" fill="#fff" r="2.5"></circle>
+<circle cx="600" cy="80" fill="#fff" r="2.5"></circle>
+<!-- Hover Indicator State (Visualized) -->
+<line class="stroke-zinc-800" stroke-width="1" x1="500" x2="500" y1="0" y2="200"></line>
+<circle cx="500" cy="115" fill="#D30026" r="5"></circle>
+<defs>
+<lineargradient id="area-gradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#D30026" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#D30026" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+</svg>
+<!-- Floating Tooltip Visual -->
+<div class="absolute left-[510px] top-12 bg-zinc-900 border border-white/10 p-2 text-[9px] uppercase tracking-widest font-bold">
+<div class="text-zinc-500">T: 38s</div>
+<div class="text-white">WPM: 54.2</div>
+</div>
+</div>
+<div class="flex justify-between mt-10 opacity-30 text-[9px] font-black tracking-widest">
+<span>00:00:00</span>
+<span>00:00:15</span>
+<span>00:00:30</span>
+<span>00:00:45</span>
+<span>00:00:60</span>
+</div>
+</div>
+<!-- Detailed Diagnostic Column -->
+<div class="col-span-12 lg:col-span-3 space-y-6">
+<div class="bg-[#0c0e0e] border border-white/5 p-8 h-full flex flex-col">
+<h3 class="uppercase tracking-[0.3em] text-[11px] font-black text-zinc-500 mb-8 border-b border-white/5 pb-4">Character Diagnostic</h3>
+<div class="flex-grow space-y-4">
+<div class="flex justify-between items-end group">
+<div class="space-y-1">
+<span class="uppercase tracking-[0.2em] text-[9px] font-bold text-zinc-600 group-hover:text-green-500 transition-colors">Correct</span>
+<div class="h-1 w-12 bg-zinc-900 overflow-hidden">
+<div class="h-full bg-green-500 w-[90%]"></div>
+</div>
+</div>
+<span class="text-4xl font-light tracking-tighter text-zinc-300">60</span>
+</div>
+<div class="flex justify-between items-end group">
+<div class="space-y-1">
+<span class="uppercase tracking-[0.2em] text-[9px] font-bold text-zinc-600 group-hover:text-primary-container transition-colors">Incorrect</span>
+<div class="h-1 w-12 bg-zinc-900 overflow-hidden">
+<div class="h-full bg-primary-container w-[18%]"></div>
+</div>
+</div>
+<span class="text-4xl font-light tracking-tighter text-zinc-300">11</span>
+</div>
+<div class="flex justify-between items-end group">
+<div class="space-y-1">
+<span class="uppercase tracking-[0.2em] text-[9px] font-bold text-zinc-600">Extra</span>
+<div class="h-1 w-12 bg-zinc-900"></div>
+</div>
+<span class="text-4xl font-light tracking-tighter text-zinc-700">00</span>
+</div>
+<div class="flex justify-between items-end group">
+<div class="space-y-1">
+<span class="uppercase tracking-[0.2em] text-[9px] font-bold text-zinc-600">Missed</span>
+<div class="h-1 w-12 bg-zinc-900"></div>
+</div>
+<span class="text-4xl font-light tracking-tighter text-zinc-700">00</span>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-white/5">
+<div class="flex items-center gap-2 text-primary-container/60">
+<span class="material-symbols-outlined text-sm">warning</span>
+<span class="text-[9px] uppercase tracking-widest font-black">Warning: High latency on 'E' key</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Heavy Tactile Actions -->
+<section class="flex flex-col md:flex-row gap-6 justify-center items-center py-12 border-t border-white/5">
+<button class="relative w-full md:w-80 group overflow-hidden bg-primary-container py-6 px-12 active:scale-[0.98] transition-all duration-300">
+<div class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+<div class="relative flex items-center justify-center gap-4">
+<span class="material-symbols-outlined font-black">refresh</span>
+<span class="uppercase tracking-[0.3em] text-[11px] font-black text-white">Initiate Retest</span>
+</div>
+</button>
+<button class="relative w-full md:w-80 group overflow-hidden border border-white/10 py-6 px-12 hover:bg-white/[0.03] active:scale-[0.98] transition-all duration-300">
+<div class="absolute inset-0 bg-primary-container/0 group-hover:bg-primary-container/5 transition-colors"></div>
+<div class="relative flex items-center justify-center gap-4">
+<span class="material-symbols-outlined text-primary-container">share</span>
+<span class="uppercase tracking-[0.3em] text-[11px] font-black text-zinc-300">Publish Result</span>
+</div>
+</button>
+</section>
+<!-- Cinematic Atmospheric Inset -->
+<div class="mt-20 h-96 w-full relative overflow-hidden group grayscale">
+<img alt="Atmosphere" class="w-full h-full object-cover opacity-20 group-hover:opacity-30 transition-all duration-[3000ms] group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgxgkpqUVkMQLpC_LzFG6gMMQyS5mPODz-cwZRULzBjlQZ0MP1I3oxPBN0BMPlkmQFqrPhzwJ4TebnaBP3ayncfW2bl9RMjfptrDPKOayMSHHYgeorpvLRID14_1rZ4qigBcyILoZ0gIjf7v99nnoWQ11Yyh8U_zBDSxLyC_AKRlF30uH8VqM767ooX5qg6wUS_xz41ydhkIVvAWASbR73SVIHE7k1CZFbwNvKdLSDItYffiNJuazk_wPiPHGu7e7ZMnkHIdhTFxRv"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-dim via-transparent to-transparent"></div>
+<div class="absolute bottom-12 left-12 max-w-lg">
+<p class="text-5xl font-black tracking-tighter text-white/5 uppercase leading-none select-none">Obsessive Precision. Mechanical Soul.</p>
+</div>
+<!-- Keyboard Overlay Silhouette (Faint) -->
+<div class="absolute inset-0 pointer-events-none mix-blend-overlay opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="border-t border-white/5 py-16 bg-black">
+<div class="max-w-7xl mx-auto px-12 flex flex-col md:flex-row justify-between items-center gap-12">
+<div class="flex flex-col items-center md:items-start gap-4">
+<div class="text-3xl font-black tracking-tighter text-white/20">MONOLITH</div>
+<p class="uppercase tracking-[0.4em] text-[9px] font-medium text-zinc-700">© 2024 Monolith Typewriter Co. Precision Engineered Systems.</p>
+</div>
+<div class="flex gap-10">
+<a class="uppercase tracking-[0.3em] text-[9px] font-black text-zinc-600 hover:text-primary-container transition-colors" href="#">System_Log</a>
+<a class="uppercase tracking-[0.3em] text-[9px] font-black text-zinc-600 hover:text-primary-container transition-colors" href="#">Privacy_Vault</a>
+<a class="uppercase tracking-[0.3em] text-[9px] font-black text-zinc-600 hover:text-primary-container transition-colors" href="#">Comm_Channel</a>
+<a class="uppercase tracking-[0.3em] text-[9px] font-black text-zinc-600 hover:text-primary-container transition-colors" href="#">Tech_Support</a>
+</div>
+</div>
+</footer>
+</body></html>
