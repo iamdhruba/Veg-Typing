@@ -51,8 +51,8 @@ const resultValidation = [
     .isInt({ min: 0, max: 100 })
     .withMessage('Accuracy must be between 0 and 100'),
   body('duration')
-    .isInt({ min: 15, max: 300 })
-    .withMessage('Duration must be between 15 and 300 seconds'),
+    .isInt({ min: 0, max: 300 })
+    .withMessage('Duration must be between 0 and 300 seconds'),
   validate
 ];
 
