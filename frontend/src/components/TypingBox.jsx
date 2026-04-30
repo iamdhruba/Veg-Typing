@@ -75,16 +75,23 @@ const TypingBox = ({ words, mode, duration, language, onFinish, pbWpm = 0, socke
 
   usePreetiInput(handleCharInsert);
 
+  const currentRowRef = useRef(0);
+
+  useEffect(() => {
+    currentRowRef.current = 0;
+    if (wordsContainerRef.current) wordsContainerRef.current.scrollTop = 0;
+  }, [words]);
+
   useEffect(() => {
     if (activeWordRef.current && wordsContainerRef.current) {
-      const activeRect = activeWordRef.current.getBoundingClientRect();
-      const containerRect = wordsContainerRef.current.getBoundingClientRect();
-      const relativeTop = activeRect.top - containerRect.top;
-      if (relativeTop > 100) {
-        wordsContainerRef.current.scrollTop += 50;
-        if (soundEnabled) {
-          playTypewriterDing();
-        }
+      const activeTop = activeWordRef.current.offsetTop;
+      const lineHeight = activeWordRef.current.offsetHeight;
+      const currentRow = Math.round(activeTop / lineHeight);
+
+      if (currentRow > currentRowRef.current) {
+        currentRowRef.current = currentRow;
+        wordsContainerRef.current.scrollTop = (currentRow - 1) * lineHeight;
+        if (soundEnabled) playTypewriterDing();
       }
     }
   }, [currentWordIdx, soundEnabled]);
@@ -139,7 +146,7 @@ const TypingBox = ({ words, mode, duration, language, onFinish, pbWpm = 0, socke
         {/* Words area */}
         <div 
           ref={wordsContainerRef}
-          className="flex flex-wrap gap-x-4 scroll-smooth transition-all duration-300"
+          className="flex flex-wrap gap-x-4"
           style={{ maxHeight: '100%', overflowY: 'scroll', scrollbarWidth: 'none' }}
         >
           {words.slice(visibleRange.start, visibleRange.end).map((word, relIdx) => {
