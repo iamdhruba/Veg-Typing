@@ -10,7 +10,24 @@ const COLORS = [
   'bg-cyan-500', 'bg-pink-500', 'bg-lime-500',
 ];
 
+const playErrorSound = () => {
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(150, audioCtx.currentTime);
+    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+    oscillator.start();
+    oscillator.stop(audioCtx.currentTime + 0.1);
+  } catch { /* ignore */ }
+};
+
 const Race = () => {
+  const soundEnabled = useTypingStore(s => s.soundEnabled);
   const socket = useSocket();
   const user = useAuthStore(s => s.user);
   const fontSize = useTypingStore(s => s.fontSize) ?? 'text-3xl';
@@ -129,6 +146,12 @@ const Race = () => {
     for (let i = 0; i < val.length && i < textChars.length; i++) {
       if (val[i] === textChars[i]) correctCount++;
       else break; // stop at first error
+    }
+
+    // Strict Validation: Only allow input to update if it's correct so far
+    if (val.length > correctCount && val.length > inputValue.length) {
+      if (soundEnabled) playErrorSound();
+      return; // Block the incorrect character
     }
 
     setInputValue(val);
@@ -303,9 +326,8 @@ const Race = () => {
       {phase === 'starting' && (
         <div className="flex flex-col items-center justify-center py-20 gap-8 relative">
           <p className="text-[10px] font-black text-primary uppercase tracking-[0.5em]">All Players Connected</p>
-          <div className="relative">
-            <span className="text-[160px] font-black text-primary/10 leading-none">{countdown}</span>
-            <span className="absolute inset-0 flex items-center justify-center text-[80px] font-black text-primary leading-none animate-pulse">
+          <div className="relative h-40 flex items-center justify-center">
+            <span className="text-[120px] font-black text-primary leading-none animate-pulse drop-shadow-2xl">
               {countdown}
             </span>
           </div>
@@ -390,7 +412,7 @@ const Race = () => {
               {raceText.split('').map((char, i) => {
                 let cls = 'text-on-background/25'; // upcoming
                 if (i < inputValue.length) {
-                  cls = inputValue[i] === char ? 'text-primary' : 'text-error bg-error/10';
+                  cls = inputValue[i] === char ? 'text-correct' : 'text-error bg-error/10';
                 }
                 if (i === inputValue.length) {
                   cls = 'text-on-background';
