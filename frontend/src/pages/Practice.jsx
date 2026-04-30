@@ -151,10 +151,10 @@ const Practice = () => {
   return (
     <div className="h-screen w-full flex flex-col md:flex-row bg-background overflow-hidden font-sans text-on-background selection:bg-primary/20">
       <SEO
-        title="Nepali Typing Practice — Learn Preeti & Unicode | VEG"
-        description="Learn Nepali typing step-by-step with guided lessons for Preeti, Unicode, and English layouts. Progressive difficulty, finger guides, XP system, and real-time accuracy feedback."
+        title="Nepali Typing Practice Online | Learn Preeti & Unicode — VEG"
+        description="Learn Nepali typing online step-by-step with guided lessons. Practice Preeti, Unicode, and English layouts with progressive difficulty, finger guides, and XP system."
         path="/practice"
-        keywords="Nepali typing lessons, Preeti keyboard practice, learn Unicode typing, typing finger guide, टाइपिङ अभ्यास"
+        keywords="nepali typing online, online nepali typing, Nepali typing lessons, Preeti keyboard practice, learn Unicode typing, typing finger guide, टाइपिङ अभ्यास"
       />
 
       <aside className="w-full md:w-80 border-b md:border-b-0 md:border-r border-outline/5 bg-white/5 p-4 sm:p-6 md:p-8 flex flex-col gap-6 md:gap-12 overflow-y-auto max-h-[30vh] md:max-h-full">

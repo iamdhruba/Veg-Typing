@@ -5,10 +5,10 @@ const About = () => {
   return (
     <div className="max-w-4xl mx-auto w-full px-12 py-24">
       <SEO
-        title="About VEG Typewriter — High-Performance Nepali Typing"
-        description="Learn about VEG, the high-performance typing test designed to help you master Nepali typing with precision and velocity."
+        title="About VEG Typewriter — High-Performance Nepali Typing Online"
+        description="Learn about VEG, the high-performance online typing test designed to help you master Nepali typing online with precision and velocity."
         path="/about"
-        keywords="about VEG typewriter, high-performance typing, typing platform"
+        keywords="nepali typing online, online nepali typing, about VEG typewriter, high-performance typing, typing platform"
       />
       <h1 className="text-6xl font-black mb-12 tracking-tighter text-primary">VEG.</h1>
       
