@@ -50,7 +50,7 @@ export const playTypewriterClick = (isSpace = false) => {
     noiseSource.start();
     oscillator.start();
     oscillator.stop(ctx.currentTime + 0.05);
-  } catch (e) {
+  } catch {
     // AudioContext might be blocked or unsupported
   }
 };
@@ -71,7 +71,7 @@ export const playErrorBuzz = () => {
     gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
     oscillator.start();
     oscillator.stop(ctx.currentTime + 0.1);
-  } catch (e) {}
+  } catch { /* ignore */ }
 };
 
 /**
@@ -91,5 +91,5 @@ export const playTypewriterDing = () => {
     gainNode.connect(ctx.destination);
     oscillator.start(ctx.currentTime);
     oscillator.stop(ctx.currentTime + 0.5);
-  } catch (e) {}
+  } catch { /* ignore */ }
 };

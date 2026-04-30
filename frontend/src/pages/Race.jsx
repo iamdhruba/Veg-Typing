@@ -25,7 +25,19 @@ const Race = () => {
   const [inputValue, setInputValue] = useState('');
   const [startTime, setStartTime] = useState(null);
   const [myWpm, setMyWpm] = useState(0);
-  const [roomId] = useState('global');
+  const [roomId, setRoomId] = useState(`global_${language}`);
+
+  useEffect(() => {
+    return () => {
+      if (socket) {
+        socket.emit('leave_race');
+      }
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    if (phase === 'idle') setRoomId(`global_${language}`);
+  }, [language, phase]);
 
   const inputRef = useRef(null);
   const wpmInterval = useRef(null);
@@ -130,10 +142,10 @@ const Race = () => {
     }
   }, [phase, raceText, startTime, socket, roomId]);
 
-  // --- Join handler ---
   const handleJoinRace = (isPriv = false) => {
     if (!socket) return;
-    socket.emit('join_race', { roomId, username: user.username, isPrivate: isPriv });
+    const isPrivate = typeof isPriv === 'boolean' ? isPriv : false;
+    socket.emit('join_race', { roomId, username: user.username, isPrivate, language });
     setPhase('lobby');
   };
 

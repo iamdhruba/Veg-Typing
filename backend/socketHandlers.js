@@ -1,15 +1,4 @@
-const RACE_SENTENCES = [
-  "the quick brown fox jumps over the lazy dog near the river bank",
-  "a good programmer writes code that humans can understand easily",
-  "practice makes perfect and typing fast requires daily effort",
-  "नेपाली टाइपिङ अभ्यासले तपाईको गति र शुद्धता बढाउन मद्दत गर्दछ",
-  "समयको महत्व बुझेर काम गर्ने मानिस सधैं सफल हुन्छ",
-  "सगरमाथा संसारको सबैभन्दा अग्लो हिमाल हो जुन नेपालमा पर्दछ",
-  "मेहनत नै सफलताको कडी हो भन्ने कुरा हामीले बिर्सनु हुँदैन",
-  "कम्प्युटर विज्ञान आजको युगको एक अपरिहार्य आवश्यकता बनेको छ",
-  "knowledge is power but practice is the key to mastery of any skill",
-  "सत्य बोल्नु र इमानदार रहनु नै मानिसको सबैभन्दा ठूलो धर्म हो",
-];
+const { getRandomWords, WORD_LISTS } = require('./wordLists_backend');
 
 const races = new Map();
 let finishOrder = new Map(); // roomId -> [socketId, ...]
@@ -18,7 +7,7 @@ const startTimers = new Map(); // roomId -> Timeout
 module.exports = (io) => {
   io.on('connection', (socket) => {
 
-    socket.on('join_race', ({ roomId, username, isPrivate = false }) => {
+    socket.on('join_race', ({ roomId, username, isPrivate = false, language = 'english' }) => {
       socket.join(roomId);
 
       if (!races.has(roomId)) {
@@ -28,6 +17,7 @@ module.exports = (io) => {
           text: '',
           startTime: null,
           isPrivate,
+          language,
         });
         finishOrder.set(roomId, []);
       }
@@ -124,27 +114,54 @@ module.exports = (io) => {
       io.to(roomId).emit('race_update', { players: race.players });
     });
 
-    socket.on('disconnect', () => {
+    const handlePlayerLeave = (socketId) => {
       for (const [roomId, race] of races.entries()) {
-        if (race.players[socket.id]) {
-          delete race.players[socket.id];
-          const remaining = Object.keys(race.players).length;
-          if (remaining === 0) {
+        if (race.players[socketId]) {
+          delete race.players[socketId];
+          const remainingHumans = Object.values(race.players).filter(p => !p.isBot).length;
+          
+          if (remainingHumans === 0) {
             if (startTimers.has(roomId)) {
               clearTimeout(startTimers.get(roomId));
               startTimers.delete(roomId);
             }
+            if (startTimers.has(roomId + '_bot')) {
+              clearTimeout(startTimers.get(roomId + '_bot'));
+              startTimers.delete(roomId + '_bot');
+            }
             races.delete(roomId);
             finishOrder.delete(roomId);
           } else {
-            io.to(roomId).emit('lobby_update', {
-              players: race.players,
-              status: race.status,
-              needed: Math.max(0, 5 - remaining),
-            });
+            if (race.status === 'running') {
+              const allDone = Object.values(race.players).every(p => p.position);
+              if (allDone) {
+                race.status = 'finished';
+                io.to(roomId).emit('race_finished', { players: race.players });
+                setTimeout(() => {
+                  races.delete(roomId);
+                  finishOrder.delete(roomId);
+                }, 15000);
+              }
+            } else {
+              io.to(roomId).emit('lobby_update', {
+                players: race.players,
+                status: race.status,
+                needed: Math.max(0, 5 - Object.keys(race.players).length),
+              });
+            }
           }
+          const socketInstance = io.sockets.sockets.get(socketId);
+          if (socketInstance) socketInstance.leave(roomId);
         }
       }
+    };
+
+    socket.on('leave_race', () => {
+      handlePlayerLeave(socket.id);
+    });
+
+    socket.on('disconnect', () => {
+      handlePlayerLeave(socket.id);
     });
   });
 };
@@ -181,7 +198,7 @@ function beginCountdown(io, roomId) {
   if (!race || race.status !== 'waiting') return;
 
   race.status = 'starting';
-  race.text = RACE_SENTENCES[Math.floor(Math.random() * RACE_SENTENCES.length)];
+  race.text = getRandomWords(race.language || 'english', 15).join(' ');
   let count = 5;
 
   io.to(roomId).emit('race_starting', { text: race.text, countdown: count });

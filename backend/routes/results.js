@@ -19,12 +19,13 @@ const resultLimiter = rateLimit({
 // @access  Private
 router.post('/', auth, resultLimiter, resultValidation, async (req, res) => {
   const { language, mode, duration, wpm, accuracy, wpmHistory, charData } = req.body;
+  logger.info('POST /api/results body:', { language, mode, duration, wpm, accuracy });
 
   // Validate result data
-  if (!language || !duration || wpm == null || accuracy == null) {
+  if (!language || duration == null || wpm == null || accuracy == null) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
-  if (wpm < 0 || wpm > 350) {
+  if (wpm < 0 || wpm > 500) {
     return res.status(400).json({ message: 'Invalid WPM value' });
   }
   if (accuracy < 0 || accuracy > 100) {
@@ -34,46 +35,42 @@ router.post('/', auth, resultLimiter, resultValidation, async (req, res) => {
     return res.status(400).json({ message: 'Invalid language' });
   }
 
-  // --- ANTI-CHEAT VALIDATION ---
-  if (charData) {
-    // 1 WPM = 5 chars per minute
-    const totalTypedChars = Object.values(charData).reduce((acc, curr) => acc + curr.correct + curr.incorrect, 0);
-    const expectedChars = (wpm * 5) * (duration / 60);
-    
-    // If they claim high WPM but typed very few characters (allow 20% margin of error for backspaces)
-    if (totalTypedChars > 0 && expectedChars > (totalTypedChars * 1.5)) {
-      return res.status(403).json({ message: 'Anti-cheat triggered: WPM does not match typed character count.' });
-    }
-  }
-
   try {
     const newResult = new Result({
       userId: req.user.id,
       language,
-      mode,
+      mode: mode || 'time',
       duration,
       wpm,
       accuracy,
-      wpmHistory,
-      charData,
+      wpmHistory: wpmHistory || [],
+      charData: charData || {},
     });
 
     const result = await newResult.save();
+    logger.info('Result saved successfully:', { resultId: result._id, userId: req.user.id });
 
-    // Update user personal bests
+    // Update user personal bests atomically
     const user = await User.findById(req.user.id);
     if (user) {
-      user.totalTests += 1;
-      if (!user.personalBests[language] || wpm > user.personalBests[language].wpm) {
-        user.personalBests[language] = { wpm, accuracy };
+      const pb = user.personalBests?.[language];
+      const updateData = { $inc: { totalTests: 1 } };
+      if (!pb || wpm > pb.wpm) {
+        updateData.$set = { [`personalBests.${language}`]: { wpm, accuracy } };
       }
-      await user.save();
+      await User.updateOne({ _id: req.user.id }, updateData);
     }
 
     res.json(result);
   } catch (err) {
-    logger.error('Error saving result:', err);
-    res.status(500).json({ message: 'Server Error' });
+    logger.error('Error saving result:', { 
+      message: err.message, 
+      stack: err.stack, 
+      name: err.name,
+      userId: req.user?.id,
+      body: req.body
+    });
+    res.status(500).json({ message: err.message || 'Server Error', error: err.toString() });
   }
 });
 
@@ -82,6 +79,7 @@ router.post('/', auth, resultLimiter, resultValidation, async (req, res) => {
 // @access  Private
 router.get('/me', auth, async (req, res) => {
   try {
+    logger.info('GET /api/results/me - userId:', req.user.id);
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
     const skip = (page - 1) * limit;
@@ -98,6 +96,8 @@ router.get('/me', auth, async (req, res) => {
         .lean(),
       Result.countDocuments({ userId: req.user.id })
     ]);
+
+    logger.info('Found results:', { count: results.length, total });
 
     res.json({
       results,

@@ -107,27 +107,3 @@ export const UNICODE_MAP = [
   { from: "Alt+61", to: "=" },
 ];
 
-export function convertToUnicode(input) {
-  let result = "";
-  let i = 0;
-  // Sort by length of 'from' to match longest sequences first
-  const sorted = [...UNICODE_MAP].sort((a,b) => b.from.length - a.from.length);
-  
-  while (i < input.length) {
-    let matched = false;
-    for (const { from, to } of sorted) {
-      // Handle Shift+ prefixes if they are passed as literal strings or single chars
-      let target = from;
-      if (from.startsWith("Shift+")) {
-          // If the input has the uppercase version of the key, it counts as Shift+Key
-          // But our input engine might be passing the actual typed characters.
-          // In useTypingEngine, we get raw = e.target.value.
-          // If I press Shift+K, raw will contain 'K'.
-      }
-      
-      // We need a way to match 'K' to 'Shift+K' if that's how it's mapped.
-      // Actually, let's simplify the map to use the characters themselves.
-    }
-    // ...
-  }
-}

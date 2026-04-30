@@ -26,7 +26,7 @@ if (persistedRaw) {
   try {
     const { state } = JSON.parse(persistedRaw);
     if (state?.theme) applyTheme(state.theme);
-  } catch (_) {}
+  } catch (_) { /* ignore */ }
 }
 
 function App() {

@@ -6,10 +6,9 @@ import { useAuthStore } from '../store/useAuthStore';
 import { CURRICULUM } from '../data/curriculum';
 
 import GuidedLesson from '../components/practice/GuidedLesson';
-import { generateProgressive, generateFromBank, generateSmartDrill } from '../utils/textGenerator';
+import { generateProgressive, generateFromBank } from '../utils/textGenerator';
 import SEO from '../components/SEO';
 import { unicodeToPreeti } from '../utils/preetiTranslator';
-import { getWeakCharacters } from '../utils/weakKeys';
 import api from '../services/api';
 
 const playErrorSound = () => {
@@ -25,7 +24,7 @@ const playErrorSound = () => {
     gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
     oscillator.start();
     oscillator.stop(audioCtx.currentTime + 0.1);
-  } catch (e) { }
+  } catch { /* ignore */ }
 };
 
 const Practice = () => {
@@ -37,24 +36,9 @@ const Practice = () => {
 
   const [mode, setMode] = useState('preeti');
   const [currentLevelIdx, setCurrentLevelIdx] = useState(0);
-  const [showComplete, setShowComplete] = useState(false);
-  const [lastStats, setLastStats] = useState(null);
   const [restartKey, setRestartKey] = useState(0);
 
   const levels = CURRICULUM[mode] || CURRICULUM.english;
-  const [results, setResults] = useState([]);
-
-  useEffect(() => {
-    const fetchResults = async () => {
-      try {
-        const { data } = await api.get('/results/me');
-        setResults(data);
-      } catch (e) {
-        console.error('Failed to fetch results:', e);
-      }
-    };
-    fetchResults();
-  }, []);
 
   const currentLevelRaw = levels[currentLevelIdx];
 
@@ -66,10 +50,9 @@ const Practice = () => {
       sequence = generateFromBank(currentLevelRaw.wordBank, 10);
     }
     return { ...currentLevelRaw, sequence };
-  }, [currentLevelRaw, restartKey, mode]);
+  }, [currentLevelRaw]);
 
   const handleLessonComplete = async (stats) => {
-    setLastStats(stats);
     updateProgress(mode, currentLevel.id, stats);
 
     // Save to results collection
@@ -84,10 +67,6 @@ const Practice = () => {
           accuracy: stats.accuracy,
           charData: stats.charData
         });
-
-        // Refresh local results
-        const { data } = await api.get('/results/me');
-        setResults(data);
       } catch (e) {
         console.error('Failed to save practice result:', e);
       }
@@ -158,6 +137,7 @@ const Practice = () => {
           }
 
           // Split into words or chunks to handle mixed text
+          // eslint-disable-next-line no-misleading-character-class
           return part.split(/([^ \u0900-\u097F\u00A1-\u00FF\u2013-\u2030]+)/g).map((subPart, j) => {
             return renderStyledPart(subPart, i + '-' + j);
           });
@@ -210,7 +190,6 @@ const Practice = () => {
                   onClick={() => {
                     setMode(m);
                     setCurrentLevelIdx(0);
-                    setShowComplete(false);
                   }}
                   className={`px-4 py-3 text-[11px] font-medium uppercase text-left tracking-[0.15em] transition-all rounded-sm ${mode === m ? 'bg-primary text-white' : 'text-on-background/40 hover:bg-on-background/5'}`}
                 >
@@ -228,8 +207,6 @@ const Practice = () => {
             <div className="flex flex-col">
               {levels.map((lvl, idx) => {
                 const levelProgress = progress[mode]?.[lvl.id];
-                const prevLevel = idx > 0 ? levels[idx - 1] : null;
-                const prevLevelProgress = prevLevel ? progress[mode]?.[prevLevel.id] : null;
                 const isLocked = false; // All levels unlocked by developer request
                 const isActive = currentLevelIdx === idx;
 
@@ -237,7 +214,7 @@ const Practice = () => {
                   <button
                     key={lvl.id}
                     disabled={isLocked}
-                    onClick={() => { if (!isLocked) { setCurrentLevelIdx(idx); setShowComplete(false); } }}
+                    onClick={() => { if (!isLocked) { setCurrentLevelIdx(idx); } }}
 
                     className={`group relative px-6 py-5 text-left transition-all ${isActive ? 'bg-primary/5' : isLocked ? 'opacity-30 cursor-not-allowed' : 'hover:bg-on-background/[0.02]'}`}
                   >
@@ -276,18 +253,28 @@ const Practice = () => {
           </div>
 
           <div className="flex flex-col items-end gap-6">
-            <div className="text-right">
-              <p className="text-[10px] font-medium text-on-background/20 uppercase tracking-[0.3em] mb-1">Overall Progress</p>
-              <div className="flex items-center gap-3">
-                <span className="text-4xl font-medium text-primary leading-none">
-                  {Math.round(((currentLevelIdx + 1) / levels.length) * 100)}%
-                </span>
-                <div className="w-32 h-1.5 bg-on-background/5 rounded-full overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${((currentLevelIdx + 1) / levels.length) * 100}%` }}
-                    className="h-full bg-primary"
-                  />
+            <div className="flex items-center gap-6">
+              <button 
+                onClick={() => setRestartKey(prev => prev + 1)}
+                className="group flex items-center gap-2 px-3 py-1.5 border border-outline/10 hover:border-primary/50 transition-colors"
+                title="Restart Lesson"
+              >
+                <span className="material-symbols-outlined text-sm text-on-background/40 group-hover:text-primary transition-colors">refresh</span>
+                <span className="text-[9px] font-black uppercase tracking-widest text-on-background/40 group-hover:text-primary transition-colors">Restart</span>
+              </button>
+              <div className="text-right">
+                <p className="text-[10px] font-medium text-on-background/20 uppercase tracking-[0.3em] mb-1">Overall Progress</p>
+                <div className="flex items-center gap-3">
+                  <span className="text-4xl font-medium text-primary leading-none">
+                    {Math.round(((currentLevelIdx + 1) / levels.length) * 100)}%
+                  </span>
+                  <div className="w-32 h-1.5 bg-on-background/5 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${((currentLevelIdx + 1) / levels.length) * 100}%` }}
+                      className="h-full bg-primary"
+                    />
+                  </div>
                 </div>
               </div>
             </div>

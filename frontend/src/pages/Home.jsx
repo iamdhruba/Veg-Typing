@@ -26,6 +26,11 @@ const Home = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const handleRestart = () => {
+    setResult(null);
+    setTestId(prev => prev + 1);
+  };
+
   useEffect(() => {
     const loadWords = async () => {
       try {
@@ -80,6 +85,7 @@ const Home = () => {
   }, [navigate, result]);
 
   const handleFinish = async (finalResult) => {
+    console.log('Test finished, result:', finalResult);
     setResult(finalResult);
     toast.success('Test Completed!', {
       style: {
@@ -92,6 +98,16 @@ const Home = () => {
 
     // Save to backend if logged in
     if (user) {
+      console.log('User logged in, attempting to save...');
+      console.log('Payload:', {
+        language: finalResult.language,
+        mode: finalResult.mode || 'time',
+        duration: finalResult.duration,
+        wpm: finalResult.wpm,
+        accuracy: finalResult.accuracy,
+        wpmHistory: finalResult.wpmHistory,
+        charData: finalResult.charData
+      });
       try {
         await api.post('/results', {
           language: finalResult.language,
@@ -103,6 +119,8 @@ const Home = () => {
           charData: finalResult.charData
         });
 
+        console.log('Result saved successfully!');
+
         useAuthStore.getState().checkAchievements({
           wpm: finalResult.wpm,
           accuracy: finalResult.accuracy,
@@ -111,7 +129,15 @@ const Home = () => {
         });
       } catch (error) {
         console.error('Failed to save result:', error);
-        toast.error('Failed to save result. Please check your connection.', {
+        console.error('Error details:', {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: error.message
+        });
+        const msg = error.code === 'ECONNABORTED' || !error.response
+          ? 'Server is waking up, result not saved. Try again shortly.'
+          : 'Failed to save result.';
+        toast.error(msg, {
           style: {
             background: 'var(--surface)',
             color: 'var(--error)',
@@ -123,9 +149,7 @@ const Home = () => {
     }
   };
 
-  const handleRestart = () => {
-    setTestId(prev => prev + 1);
-  };
+
 
   return (
     <div className={`max-w-7xl mx-auto w-full px-12 py-16 flex flex-col items-center justify-center min-h-[80vh] ${result ? 'py-4' : ''}`}>
@@ -150,8 +174,22 @@ const Home = () => {
             pbWpm={user?.personalBests?.[language]?.wpm || 0}
           />
           <div className="mt-24 text-on-background/50 font-mono text-xs uppercase tracking-[0.2em] flex gap-8">
-            <span className="flex items-center gap-2"><kbd className="bg-surface-container-high px-2 py-1 text-on-background/70">tab</kbd> restart</span>
-            <span className="flex items-center gap-2"><kbd className="bg-surface-container-high px-2 py-1 text-on-background/70">esc</kbd> settings</span>
+            <button 
+              onClick={(e) => { e.preventDefault(); handleRestart(); document.querySelector('input')?.focus(); }} 
+              className="flex items-center gap-2 hover:text-primary transition-colors cursor-pointer group outline-none"
+            >
+              <span className="material-symbols-outlined text-[14px]">refresh</span>
+              <kbd className="bg-surface-container-high px-2 py-1 text-on-background/70 group-hover:text-primary group-hover:bg-primary/10 transition-colors">tab</kbd> 
+              restart
+            </button>
+            <button 
+              onClick={() => navigate('/settings')} 
+              className="flex items-center gap-2 hover:text-primary transition-colors cursor-pointer group outline-none"
+            >
+              <span className="material-symbols-outlined text-[14px]">settings</span>
+              <kbd className="bg-surface-container-high px-2 py-1 text-on-background/70 group-hover:text-primary group-hover:bg-primary/10 transition-colors">esc</kbd> 
+              settings
+            </button>
           </div>
         </>
       ) : (

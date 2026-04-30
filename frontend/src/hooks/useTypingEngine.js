@@ -114,7 +114,7 @@ export function useTypingEngine({ words, mode, duration, language, socket, roomI
     const rawWpm = Math.round(totalCharsTyped / 5 / (elapsed || 1/60));
     
     const correctTyped = correctCharsRef.current;
-    const accuracy = totalCharsTyped > 0 ? Math.round((correctTyped / totalCharsTyped) * 100) : 0;
+    const accuracy = totalCharsTyped > 0 ? Math.min(100, Math.round((correctTyped / totalCharsTyped) * 100)) : 0;
     
     let consistency = 0;
     if (wpmHistory.length > 2) {
@@ -138,12 +138,13 @@ export function useTypingEngine({ words, mode, duration, language, socket, roomI
       consistency,
       characters,
       language,
+      mode,
       duration,
       timestamp: new Date().toISOString(),
       wpmHistory,
       charData: charDataRef.current,
     };
-  }, [startTime, typedHistory, language, duration, wpmHistory, currentInput]);
+  }, [startTime, typedHistory, language, mode, duration, wpmHistory, currentInput]);
 
   const restart = useCallback(() => {
     clearInterval(timerRef.current);
@@ -162,6 +163,7 @@ export function useTypingEngine({ words, mode, duration, language, socket, roomI
   return {
     currentInput, handleInput, currentWordIdx,
     charStates, status, timeLeft,
-    typedHistory, getResult, restart, setCurrentInput
+    typedHistory, getResult, restart, setCurrentInput,
+    startTime, isFinished: status === 'finished'
   };
 }

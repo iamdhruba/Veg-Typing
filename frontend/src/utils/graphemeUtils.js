@@ -11,7 +11,7 @@ export const splitGraphemes = (text, language) => {
   let result;
   
   if (language === 'preeti') {
-    const combos = /sf\[|sf\]|s\[|s\]|sf|sl|sL|s'|s\"|sF|s\+|sM|s\{|s\\|c\+|cM|cf\]|cf\}|P\]|O\{|b\[|cf|pm|em|km|0f|if|If|Qm|qm|./g;
+    const combos = /sf\[|sf\]|s\[|s\]|sf|sl|sL|s'|s"|sF|s\+|sM|s\{|s\\|c\+|cM|cf\]|cf\}|P\]|O\{|b\[|cf|pm|em|km|0f|if|If|Qm|qm|./g;
     result = text.match(combos) || [];
   } else if (Intl.Segmenter) {
     const segmenter = new Intl.Segmenter('ne', { granularity: 'grapheme' });

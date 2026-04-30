@@ -40,18 +40,18 @@ const loginValidation = [
 
 const resultValidation = [
   body('language')
-    .isIn(['english', 'preeti', 'unicode'])
+    .isIn(['english', 'preeti', 'unicode', 'romanized'])
     .withMessage('Invalid language'),
   body('wpm')
-    .isInt({ min: 0, max: 500 })
+    .isFloat({ min: 0, max: 500 })
     .withMessage('WPM must be between 0 and 500'),
   body('accuracy')
-    .isInt({ min: 0, max: 100 })
+    .isFloat({ min: 0, max: 100 })
     .withMessage('Accuracy must be between 0 and 100'),
   body('duration')
-    .isInt({ min: 0, max: 300 })
+    .isFloat({ min: 0, max: 300 })
     .withMessage('Duration must be between 0 and 300 seconds'),
-  validate
+  (req, res, next) => validate(req, res, next)
 ];
 
 module.exports = {

@@ -16,12 +16,6 @@ const Leaderboard = () => {
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    setPage(1);
-    setLeaderboard([]);
-    fetchLeaderboard(1, true);
-  }, [language, duration, timeframe]);
-
   const fetchLeaderboard = async (pageNum = page, reset = false) => {
     setLoading(true);
     setError(null);
@@ -44,6 +38,12 @@ const Leaderboard = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    setPage(1);
+    setLeaderboard([]);
+    fetchLeaderboard(1, true);
+  }, [language, duration, timeframe]);
 
   const loadMore = () => {
     if (!loading && hasMore) {

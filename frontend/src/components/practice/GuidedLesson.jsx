@@ -30,7 +30,7 @@ const splitGraphemes = (text, mode) => {
     // 2. Nepali Unicode syllable (Base + Halant/Matras)
     // 3. Preeti ASCII syllable: Optional 'l' (i-matra) + Base Character + Optional Modifiers
     // 4. Any other single character (punctuation, space, etc.)
-    const preetiSyllable = /Alt\+\d{4}|[\u0900-\u097F](?:[\u094D][\u0900-\u097F])*[\u094D]?[\u093E-\u094D\u0901-\u0903]*|l?[a-zA-Z0-9\/\?;>`][mf\[\]\}|MF\\\{+'"L]*|./g;
+    const preetiSyllable = /Alt\+\d{4}|[\u0900-\u097F](?:[\u094D][\u0900-\u097F])*[\u094D]?[\u093E-\u094D\u0901-\u0903]*|l?[a-zA-Z0-9\/\?;>`][mf\[\]\}|MF\\{+'"L]*|./g;
     return text.match(preetiSyllable) || [];
   }
 
@@ -251,7 +251,7 @@ const GuidedLesson = ({ level, mode, onComplete, playErrorSound }) => {
       const isLetter = (char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z');
 
       if (!isLetter) {
-        const altCode = `Alt+0${charCode}`;
+        const altCode = `Alt+0${char.charCodeAt(0)}`;
         const existingAlt = allEntries.find(item => item.e === altCode);
         if (existingAlt) return existingAlt;
 

@@ -17,10 +17,6 @@ const Stats = () => {
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
-
   const fetchStats = async (pageNum = 1, reset = false) => {
     setLoading(true);
     setError(null);
@@ -43,6 +39,10 @@ const Stats = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchStats(1, true);
+  }, []);
 
   const loadMore = () => {
     if (!loading && hasMore) {
@@ -230,7 +230,7 @@ const Stats = () => {
 
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={results}>
+              <AreaChart data={[...results].reverse()}>
                 <defs>
                   <linearGradient id="glow" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.3}/>
@@ -350,7 +350,7 @@ const Stats = () => {
           <span className="text-[9px] font-black text-on-background/20 uppercase tracking-widest">Session History</span>
         </div>
         <div className="">
-          {results.slice().reverse().slice(0, 10).map((r, i) => (
+          {results.map((r, i) => (
             <motion.div 
               key={r._id} 
               whileHover={{ backgroundColor: 'rgba(255,255,255,0.02)' }}

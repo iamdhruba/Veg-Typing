@@ -9,12 +9,12 @@ const ResultSchema = new mongoose.Schema({
   },
   language: { 
     type: String, 
-    enum: ['english', 'preeti', 'unicode'], 
+    enum: ['english', 'preeti', 'unicode', 'romanized'], 
     index: true 
   },
   mode: { 
     type: String, 
-    enum: ['time', 'words'] 
+    enum: ['time', 'words', 'quote', 'practice', 'custom'] 
   },
   duration: { 
     type: Number, 

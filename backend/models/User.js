@@ -23,6 +23,7 @@ const UserSchema = new mongoose.Schema({
     english: { wpm: { type: Number, default: 0 }, accuracy: { type: Number, default: 0 } },
     preeti: { wpm: { type: Number, default: 0 }, accuracy: { type: Number, default: 0 } },
     unicode: { wpm: { type: Number, default: 0 }, accuracy: { type: Number, default: 0 } },
+    romanized: { wpm: { type: Number, default: 0 }, accuracy: { type: Number, default: 0 } },
   },
   totalTests: { type: Number, default: 0 },
   xp: { type: Number, default: 0 },
@@ -62,13 +63,18 @@ UserSchema.methods.matchPassword = async function (enteredPassword) {
 };
 
 // Encrypt password using bcrypt
-UserSchema.pre('save', async function (next) {
+UserSchema.pre('save', function (next) {
   if (!this.isModified('password')) {
-    next();
+    return next();
   }
 
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
+  bcrypt.genSalt(10)
+    .then(salt => bcrypt.hash(this.password, salt))
+    .then(hash => {
+      this.password = hash;
+      next();
+    })
+    .catch(err => next(err));
 });
 
 module.exports = mongoose.model('User', UserSchema);
