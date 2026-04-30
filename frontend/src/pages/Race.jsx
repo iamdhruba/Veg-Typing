@@ -14,7 +14,14 @@ const Race = () => {
   const socket = useSocket();
   const user = useAuthStore(s => s.user);
   const fontSize = useTypingStore(s => s.fontSize) ?? 'text-3xl';
-  const language = useTypingStore(s => s.language);
+  const globalLanguage = useTypingStore(s => s.language);
+  const [raceLanguage, setRaceLanguage] = useState(globalLanguage);
+
+  useEffect(() => {
+    if (phase === 'idle') {
+      setRaceLanguage(globalLanguage);
+    }
+  }, [globalLanguage]);
 
   const [phase, setPhase] = useState('idle');       // idle | lobby | starting | racing | finished
   const [players, setPlayers] = useState({});
@@ -25,7 +32,7 @@ const Race = () => {
   const [inputValue, setInputValue] = useState('');
   const [startTime, setStartTime] = useState(null);
   const [myWpm, setMyWpm] = useState(0);
-  const [roomId, setRoomId] = useState(`global_${language}`);
+  const [roomId, setRoomId] = useState(`global_${raceLanguage}`);
 
   useEffect(() => {
     return () => {
@@ -36,8 +43,8 @@ const Race = () => {
   }, [socket]);
 
   useEffect(() => {
-    if (phase === 'idle') setRoomId(`global_${language}`);
-  }, [language, phase]);
+    if (phase === 'idle') setRoomId(`global_${raceLanguage}`);
+  }, [raceLanguage, phase]);
 
   const inputRef = useRef(null);
   const wpmInterval = useRef(null);
@@ -145,7 +152,7 @@ const Race = () => {
   const handleJoinRace = (isPriv = false) => {
     if (!socket) return;
     const isPrivate = typeof isPriv === 'boolean' ? isPriv : false;
-    socket.emit('join_race', { roomId, username: user.username, isPrivate, language });
+    socket.emit('join_race', { roomId, username: user.username, isPrivate, language: raceLanguage });
     setPhase('lobby');
   };
 
@@ -211,7 +218,20 @@ const Race = () => {
           </div>
           <div className="text-center">
             <h2 className="text-2xl font-black uppercase tracking-tight text-on-background/80 mb-2">Ready to Race?</h2>
-            <p className="text-xs text-on-background/40 font-bold uppercase tracking-widest">Compete against 4 other typists in real-time</p>
+            <p className="text-xs text-on-background/40 font-bold uppercase tracking-widest mb-8">Compete against 4 other typists in real-time</p>
+            
+            {/* Language Selection */}
+            <div className="flex flex-wrap justify-center gap-2 mb-8 bg-surface-container/10 p-2 border border-outline/5 max-w-lg mx-auto">
+              {['english', 'preeti', 'unicode'].map((lang) => (
+                <button
+                  key={lang}
+                  onClick={() => setRaceLanguage(lang)}
+                  className={`px-8 py-3 text-[10px] font-black uppercase tracking-widest transition-all ${raceLanguage === lang ? 'bg-primary text-white scale-105 shadow-xl shadow-primary/20' : 'text-on-background/50 hover:text-on-background/80 bg-surface-container/50'}`}
+                >
+                  {lang}
+                </button>
+              ))}
+            </div>
           </div>
           <button
             onClick={handleJoinRace}
@@ -366,7 +386,7 @@ const Race = () => {
             <p className="text-[9px] font-black text-on-background/30 uppercase tracking-widest mb-6">Type the text below</p>
 
             {/* Rendered text with highlights */}
-            <div className={`relative ${fontSize} leading-relaxed tracking-wide mb-8 select-none typing-container-${language}`}>
+            <div className={`relative ${fontSize} leading-relaxed tracking-wide mb-8 select-none typing-container-${raceLanguage}`}>
               {raceText.split('').map((char, i) => {
                 let cls = 'text-on-background/25'; // upcoming
                 if (i < inputValue.length) {

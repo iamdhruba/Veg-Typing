@@ -121,6 +121,10 @@ const Home = () => {
 
         console.log('Result saved successfully!');
 
+        // Fetch updated user to reflect new personal bests and stats locally
+        const userRes = await api.get('/auth/me');
+        useAuthStore.getState().setUser(userRes.data);
+
         useAuthStore.getState().checkAchievements({
           wpm: finalResult.wpm,
           accuracy: finalResult.accuracy,

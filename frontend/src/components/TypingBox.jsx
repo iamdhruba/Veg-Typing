@@ -170,13 +170,13 @@ const TypingBox = ({ words, mode, duration, language, onFinish, pbWpm = 0, socke
         <div className="text-sm uppercase tracking-widest">{currentWordIdx}/{words.length} · {language}</div>
       </div>
 
-      <div className={`relative ${fontSize} ${language === 'preeti' ? 'tracking-normal' : 'tracking-wide'} select-none overflow-hidden typing-container-${language}`}
+      <div className={`relative ${fontSize} ${language === 'preeti' ? 'tracking-normal' : 'tracking-wide'} select-none overflow-hidden break-words typing-container-${language}`}
         style={{ height: `${visibleRows * lineHeight}rem` }}>
 
         {/* Hidden measurement container — flex-wrap, invisible, used only to detect line breaks */}
         <div
           ref={measureContainerRef}
-          className="flex flex-wrap absolute invisible pointer-events-none w-full"
+          className="flex flex-wrap absolute invisible pointer-events-none w-full break-words"
           style={{ lineHeight: `${lineHeight}rem` }}
           aria-hidden="true"
         >

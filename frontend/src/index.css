@@ -79,6 +79,7 @@
     font-variant-ligatures: common-ligatures discretionary-ligatures;
     text-rendering: optimizeLegibility;
     transition: background-color 0.25s ease, color 0.25s ease;
+    overflow-y: scroll;
   }
 
   .keyboard-preeti {

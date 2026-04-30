@@ -8,7 +8,7 @@ A modern, feature-rich Nepali typing test application supporting both Unicode an
   - Unicode typing support
   - Preeti font typing support
   - Guided practice lessons with finger positioning
-  - Real-time multiplayer typing races
+  - **Multiplayer Arena**: Real-time racing with language-aware rooms (English, Preeti, Unicode) and automatic room cleanup.
 
 - **Practice System**
   - Structured curriculum with progressive lessons
@@ -26,8 +26,10 @@ A modern, feature-rich Nepali typing test application supporting both Unicode an
 - **User Features**
   - User authentication (login/signup)
   - Profile management
-  - Settings customization
-  - Theme support
+  - Settings customization (Sound, Caret style, Font size)
+  - Theme support with persistent storage
+  - Seamless page transitions for a premium UI experience
+  - Real-time user stats sync across pages
 
 ## Tech Stack
 
@@ -165,8 +167,8 @@ See `frontend/src/data/keyMappings.js` for complete mappings.
 Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
-
-This project is open source and available under the MIT License.
+ 
+ This project is open source and available under the MIT License.
 
 ## Support
 
