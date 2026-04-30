@@ -262,7 +262,7 @@ const Practice = () => {
 
           <div className="flex flex-col items-start lg:items-end gap-4 shrink-0 w-full lg:w-auto">
             <div className="flex items-end gap-4 sm:gap-6">
-              <button 
+              <button
                 onClick={() => setRestartKey(prev => prev + 1)}
                 className="group flex items-center gap-2 px-3 py-1.5 border border-outline/10 hover:border-primary/50 transition-colors"
                 title="Restart Lesson"
@@ -289,8 +289,8 @@ const Practice = () => {
           </div>
         </header>
 
-        <motion.div 
-          key={currentLevel.id + restartKey} 
+        <motion.div
+          key={currentLevel.id + restartKey}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}

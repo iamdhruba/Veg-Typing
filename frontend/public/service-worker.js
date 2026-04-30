@@ -1,15 +1,14 @@
-const CACHE_NAME = 'veg-typewriter-v2';
+const CACHE_NAME = 'veg-typewriter-v3'; // Incremented version
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/manifest.json',
   '/favicon.svg',
-  'https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap',
-  'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap'
 ];
 
-// Install event: Cache assets
+// Install event: Cache assets and skip waiting
 self.addEventListener('install', (event) => {
+  self.skipWaiting(); // Force the waiting service worker to become the active service worker
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       console.log('Opened cache');
@@ -18,58 +17,71 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Fetch event: Serve from cache, fallback to network
+// Activate event: Clean up old caches and claim clients
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    Promise.all([
+      // Clean up old caches
+      caches.keys().then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            if (cacheName !== CACHE_NAME) {
+              console.log('Deleting old cache:', cacheName);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      }),
+      // Take control of all clients immediately
+      self.clients.claim()
+    ])
+  );
+});
+
+// Fetch event: Network First for HTML/Navigation, Stale-While-Revalidate for others
 self.addEventListener('fetch', (event) => {
-  // Don't cache API requests
-  if (event.request.url.includes('/api/')) {
+  // Don't cache API requests or socket.io
+  if (event.request.url.includes('/api/') || event.request.url.includes('socket.io')) {
     return;
   }
 
+  // Network First strategy for Navigation (HTML)
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          // Update the cache with the new version
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
+          return response;
+        })
+        .catch(() => {
+          // Fallback to cache if network fails
+          return caches.match(event.request);
+        })
+    );
+    return;
+  }
+
+  // Stale-While-Revalidate for other assets
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      // Cache hit - return response
-      if (response) {
-        return response;
-      }
-
-      // Not in cache - fetch from network
-      return fetch(event.request).then((networkResponse) => {
-        // Check if we received a valid response
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-          return networkResponse;
+    caches.match(event.request).then((cachedResponse) => {
+      const fetchPromise = fetch(event.request).then((networkResponse) => {
+        // Cache the new response
+        if (networkResponse && networkResponse.status === 200) {
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
         }
-
-        // Clone the response because it's a stream and can only be consumed once
-        const responseToCache = networkResponse.clone();
-
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
-        });
-
         return networkResponse;
       });
-    }).catch(() => {
-      // If network fails and we don't have it in cache, return the offline page
-      // In a SPA, returning index.html is usually sufficient for navigation
-      if (event.request.mode === 'navigate') {
-        return caches.match('/index.html');
-      }
+
+      // Return cached response if available, otherwise wait for network
+      return cachedResponse || fetchPromise;
     })
   );
 });
 
-// Activate event: Clean up old caches
-self.addEventListener('activate', (event) => {
-  const cacheWhitelist = [CACHE_NAME];
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
-});
