@@ -156,7 +156,7 @@ const Home = () => {
 
 
   return (
-    <div className={`max-w-7xl mx-auto w-full px-12 py-16 flex flex-col items-center justify-center min-h-[80vh] ${result ? 'py-4' : ''}`}>
+    <div className={`max-w-7xl mx-auto w-full px-4 sm:px-8 md:px-12 py-8 md:py-16 flex flex-col items-center justify-center min-h-[80vh] ${result ? 'py-4' : ''}`}>
       <SEO
         title="VEG — Free Nepali Typing Test | Preeti & Unicode Speed Test"
         description="Test and improve your Nepali typing speed for free. Practice Preeti, Unicode, and English layouts with real-time WPM tracking, accuracy analytics, and AI-powered drills."
@@ -177,7 +177,7 @@ const Home = () => {
             onFinish={handleFinish}
             pbWpm={user?.personalBests?.[language]?.wpm || 0}
           />
-          <div className="mt-24 text-on-background/50 font-mono text-xs uppercase tracking-[0.2em] flex gap-8">
+          <div className="mt-16 md:mt-24 text-on-background/50 font-mono text-[10px] md:text-xs uppercase tracking-[0.2em] flex flex-col sm:flex-row gap-4 sm:gap-8 items-center">
             <button 
               onClick={(e) => { e.preventDefault(); handleRestart(); document.querySelector('input')?.focus(); }} 
               className="flex items-center gap-2 hover:text-primary transition-colors cursor-pointer group outline-none"

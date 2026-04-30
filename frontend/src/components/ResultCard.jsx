@@ -5,7 +5,7 @@ const ResultCard = ({ result, onRestart }) => {
   const chartData = result.wpmHistory.map((wpm, i) => ({ time: i + 1, wpm }));
 
   return (
-    <div className="w-full max-w-full mx-auto px-12 relative h-[calc(100vh-200px)] flex flex-col justify-center overflow-hidden">
+    <div className="w-full max-w-full mx-auto px-4 sm:px-8 md:px-12 relative min-h-[calc(100vh-200px)] h-auto py-8 flex flex-col justify-center overflow-hidden">
       <div className="fixed inset-0 bg-noise pointer-events-none opacity-20"></div>
       
       {/* Hero Section - Optimized */}
@@ -15,13 +15,13 @@ const ResultCard = ({ result, onRestart }) => {
             <span className="w-8 h-[1px] bg-primary"></span>
             <span className="uppercase tracking-[0.5em] text-[10px] font-black text-primary">PERFORMANCE DIAGNOSTIC</span>
           </div>
-          <h1 className="text-5xl md:text-6xl font-black tracking-tight uppercase leading-none text-on-background">Session Complete</h1>
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight uppercase leading-none text-on-background">Session Complete</h1>
         </div>
         
         <div className="mt-4 md:mt-0 flex flex-col items-end">
           <div className="relative group">
             <div className="relative flex items-baseline gap-4">
-              <span className="text-7xl font-black text-on-background tracking-tighter leading-none">{result.wpm}</span>
+              <span className="text-5xl md:text-7xl font-black text-on-background tracking-tighter leading-none">{result.wpm}</span>
               <span className="text-xl font-bold text-on-background/50 uppercase tracking-widest">WPM</span>
             </div>
           </div>
@@ -117,10 +117,10 @@ const ResultCard = ({ result, onRestart }) => {
         </div>
       </div>
 
-      <section className="flex gap-4 justify-center items-center py-8 border-t border-outline/10 relative z-10">
+      <section className="flex flex-col sm:flex-row gap-4 justify-center items-center py-8 border-t border-outline/10 relative z-10 w-full">
         <button 
           onClick={onRestart}
-          className="relative group overflow-hidden bg-primary py-4 px-12 active:scale-[0.95] transition-all duration-300 shadow-xl shadow-primary/20 flex-1 max-w-xs"
+          className="relative group overflow-hidden bg-primary py-4 px-8 sm:px-12 active:scale-[0.95] transition-all duration-300 shadow-xl shadow-primary/20 flex-1 w-full max-w-xs"
         >
           <span className="relative uppercase tracking-[0.3em] text-[10px] font-black text-white">Retest</span>
         </button>
@@ -136,7 +136,7 @@ const ResultCard = ({ result, onRestart }) => {
             navigator.clipboard.writeText(text);
             alert('Results copied to clipboard! Ready to share.');
           }}
-          className="relative group overflow-hidden border border-outline/20 py-4 px-12 hover:bg-on-background/5 active:scale-[0.95] transition-all duration-300 flex-1 max-w-xs"
+          className="relative group overflow-hidden border border-outline/20 py-4 px-8 sm:px-12 hover:bg-on-background/5 active:scale-[0.95] transition-all duration-300 flex-1 w-full max-w-xs"
         >
           <span className="relative uppercase tracking-[0.3em] text-[10px] font-black text-on-background/50 group-hover:text-primary transition-colors">Share Report</span>
         </button>

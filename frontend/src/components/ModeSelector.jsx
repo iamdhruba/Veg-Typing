@@ -16,8 +16,8 @@ const ModeSelector = () => {
 
   return (
     <div className="flex flex-col items-center gap-8 mb-16">
-      <div className="flex flex-wrap gap-8 justify-center bg-surface-container-low px-8 py-4 border border-outline/20">
-        <div className="flex gap-4 border-r border-outline/30 pr-8">
+      <div className="flex flex-wrap gap-4 md:gap-8 justify-center bg-surface-container-low px-4 md:px-8 py-4 border border-outline/20">
+        <div className="flex gap-2 sm:gap-4 border-r border-outline/30 pr-4 md:pr-8">
           {languages.map((lang) => (
             <button
               key={lang}
@@ -32,7 +32,7 @@ const ModeSelector = () => {
           ))}
         </div>
         
-        <div className="flex gap-4 border-r border-outline/30 pr-8">
+        <div className="flex gap-2 sm:gap-4 border-r border-outline/30 pr-4 md:pr-8">
           {durations.map((d) => (
             <button
               key={d}

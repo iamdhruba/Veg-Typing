@@ -169,7 +169,7 @@ const Race = () => {
   // RENDER
   // ===================================================================
   return (
-    <div className="max-w-6xl mx-auto px-8 py-16 min-h-[80vh]">
+    <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8 sm:py-16 min-h-[80vh]">
       <SEO
         title="Multiplayer Typing Arena — Live Nepali Typing Race | VEG"
         description="Race against other typists in real-time! Enter the multiplayer arena, compete in live typing tests, and see who has the fastest Nepali typing speed."
@@ -193,7 +193,7 @@ const Race = () => {
       <>
 
       {/* Header */}
-      <div className="flex justify-between items-end mb-12">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 sm:gap-0 mb-8 sm:mb-12">
         <div>
           <p className="text-[10px] font-black text-primary uppercase tracking-[0.5em] mb-1">Multiplayer</p>
           <h1 className="text-5xl font-black uppercase tracking-tighter text-on-background">Typing Arena</h1>
@@ -253,7 +253,7 @@ const Race = () => {
           </div>
 
           {/* Player slots */}
-          <div className="flex gap-4">
+          <div className="flex flex-wrap justify-center gap-4">
             {[...Array(5)].map((_, i) => {
               const entry = playerList[i];
               const filled = !!entry;
@@ -335,9 +335,9 @@ const Race = () => {
             {playerList.map(([id, p], idx) => {
               const isMe = socket && id === socket.id;
               return (
-                <div key={id} className={`flex items-center gap-4 py-2 px-3 rounded transition-all ${isMe ? 'bg-primary/5' : ''}`}>
+                <div key={id} className={`flex items-center gap-2 sm:gap-4 py-2 px-2 sm:px-3 rounded transition-all ${isMe ? 'bg-primary/5' : ''}`}>
                   {/* Username */}
-                  <div className="w-28 flex items-center gap-2 shrink-0">
+                  <div className="w-20 sm:w-28 flex items-center gap-1 sm:gap-2 shrink-0 overflow-hidden">
                     <div className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-black ${COLORS[idx % COLORS.length]}`}>
                       {p.username[0].toUpperCase()}
                     </div>
@@ -367,13 +367,13 @@ const Race = () => {
                   </div>
 
                   {/* WPM */}
-                  <div className="w-16 text-right shrink-0">
-                    <span className={`text-sm font-black ${isMe ? 'text-primary' : 'text-on-background/50'}`}>{p.wpm}</span>
+                  <div className="w-12 sm:w-16 text-right shrink-0">
+                    <span className={`text-xs sm:text-sm font-black ${isMe ? 'text-primary' : 'text-on-background/50'}`}>{p.wpm}</span>
                     <span className="text-[8px] font-bold text-on-background/30 ml-1">wpm</span>
                   </div>
 
                   {/* Position badge */}
-                  <div className="w-8 text-center shrink-0">
+                  <div className="w-6 sm:w-8 text-center shrink-0">
                     {p.position && <span className="text-lg">{getPosition(p.position)}</span>}
                   </div>
                 </div>

@@ -149,7 +149,7 @@ const Practice = () => {
   if (!currentLevel) return null;
 
   return (
-    <div className="h-screen w-full flex bg-background overflow-hidden font-sans text-on-background selection:bg-primary/20">
+    <div className="h-screen w-full flex flex-col md:flex-row bg-background overflow-hidden font-sans text-on-background selection:bg-primary/20">
       <SEO
         title="Nepali Typing Practice — Learn Preeti & Unicode | VEG"
         description="Learn Nepali typing step-by-step with guided lessons for Preeti, Unicode, and English layouts. Progressive difficulty, finger guides, XP system, and real-time accuracy feedback."
@@ -157,7 +157,7 @@ const Practice = () => {
         keywords="Nepali typing lessons, Preeti keyboard practice, learn Unicode typing, typing finger guide, टाइपिङ अभ्यास"
       />
 
-      <aside className="w-80 border-r border-outline/5 bg-white/5 p-8 flex flex-col gap-12">
+      <aside className="w-full md:w-80 border-b md:border-b-0 md:border-r border-outline/5 bg-white/5 p-4 sm:p-6 md:p-8 flex flex-col gap-6 md:gap-12 overflow-y-auto max-h-[30vh] md:max-h-full">
         <header>
           <div className="flex items-center gap-3 mb-6">
             <h1 className="text-2xl font-bold tracking-tighter uppercase text-primary">Lab v6</h1>
@@ -184,19 +184,28 @@ const Practice = () => {
           <section>
             <h5 className="text-[10px] font-medium text-on-background/30 uppercase tracking-[0.25em] mb-6">Practice Modes</h5>
             <div className="flex flex-col gap-1">
-              {['english', 'preeti', 'unicode'].map(m => (
-                <button
-                  key={m}
-                  onClick={() => {
-                    setMode(m);
-                    setCurrentLevelIdx(0);
-                  }}
-                  className={`px-4 py-3 text-[11px] font-medium uppercase text-left tracking-[0.15em] transition-all rounded-sm ${mode === m ? 'bg-primary text-white' : 'text-on-background/40 hover:bg-on-background/5'}`}
-                >
-                  {m}
-                </button>
-
-              ))}
+              {['english', 'preeti', 'unicode'].map(m => {
+                const isActive = mode === m;
+                return (
+                  <button
+                    key={m}
+                    onClick={() => {
+                      setMode(m);
+                      setCurrentLevelIdx(0);
+                    }}
+                    className={`group relative px-4 py-3 text-[11px] font-medium uppercase text-left tracking-[0.15em] transition-colors rounded-sm ${isActive ? 'text-white' : 'text-on-background/40 hover:bg-on-background/5'}`}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="active-mode-bg"
+                        className="absolute inset-0 bg-primary rounded-sm"
+                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                      />
+                    )}
+                    <span className="relative z-10">{m}</span>
+                  </button>
+                );
+              })}
             </div>
           </section>
 
@@ -215,7 +224,6 @@ const Practice = () => {
                     key={lvl.id}
                     disabled={isLocked}
                     onClick={() => { if (!isLocked) { setCurrentLevelIdx(idx); } }}
-
                     className={`group relative px-6 py-5 text-left transition-all ${isActive ? 'bg-primary/5' : isLocked ? 'opacity-30 cursor-not-allowed' : 'hover:bg-on-background/[0.02]'}`}
                   >
                     {isActive && <motion.div layoutId="active-bar" className="absolute left-0 top-0 bottom-0 w-[3px] bg-primary" />}
@@ -241,19 +249,19 @@ const Practice = () => {
         </div>
       </aside>
 
-      <main className="flex-1 relative flex flex-col items-center justify-center p-12 overflow-hidden bg-background">
+      <main className="flex-1 relative flex flex-col p-4 sm:p-8 md:p-12 overflow-x-hidden overflow-y-auto bg-background">
         <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-primary/[0.02] blur-[150px] pointer-events-none" />
 
-        <header className="absolute top-16 left-16 right-16 flex justify-between items-end z-20">
-          <div className="space-y-4">
-            <p className="text-[11px] font-medium text-primary uppercase tracking-[0.6em]">Guided Learning Path</p>
-            <h2 className="text-2xl font-medium text-on-background tracking-tighter leading-tight drop-shadow-sm">
+        <header className="w-full flex flex-col lg:flex-row justify-between items-start lg:items-end z-20 gap-4 sm:gap-6 mb-8 shrink-0">
+          <div className="space-y-2 sm:space-y-4 w-full lg:w-auto flex-1 min-w-0 pr-4">
+            <p className="text-[11px] font-medium text-primary uppercase tracking-[0.6em] truncate">Guided Learning Path</p>
+            <h2 className="text-xl sm:text-2xl font-medium text-on-background tracking-tighter leading-tight drop-shadow-sm truncate">
               {renderSmartTitle(currentLevel.title)}
             </h2>
           </div>
 
-          <div className="flex flex-col items-end gap-6">
-            <div className="flex items-center gap-6">
+          <div className="flex flex-col items-start lg:items-end gap-4 shrink-0 w-full lg:w-auto">
+            <div className="flex items-end gap-4 sm:gap-6">
               <button 
                 onClick={() => setRestartKey(prev => prev + 1)}
                 className="group flex items-center gap-2 px-3 py-1.5 border border-outline/10 hover:border-primary/50 transition-colors"
@@ -264,11 +272,11 @@ const Practice = () => {
               </button>
               <div className="text-right">
                 <p className="text-[10px] font-medium text-on-background/20 uppercase tracking-[0.3em] mb-1">Overall Progress</p>
-                <div className="flex items-center gap-3">
-                  <span className="text-4xl font-medium text-primary leading-none">
+                <div className="flex items-center justify-end gap-3 shrink-0">
+                  <span className="text-4xl font-medium text-primary leading-none shrink-0">
                     {Math.round(((currentLevelIdx + 1) / levels.length) * 100)}%
                   </span>
-                  <div className="w-32 h-1.5 bg-on-background/5 rounded-full overflow-hidden">
+                  <div className="w-24 sm:w-32 h-2 bg-on-background/10 rounded-full overflow-hidden shrink-0">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${((currentLevelIdx + 1) / levels.length) * 100}%` }}
@@ -281,14 +289,21 @@ const Practice = () => {
           </div>
         </header>
 
-        <div key={currentLevel.id + restartKey} className="w-full flex flex-col items-center mt-12">
+        <motion.div 
+          key={currentLevel.id + restartKey} 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="w-full flex-1 flex flex-col justify-center items-center pb-12"
+        >
           <GuidedLesson
             level={currentLevel}
             mode={mode}
             onComplete={handleLessonComplete}
             playErrorSound={soundEnabled ? playErrorSound : () => { }}
           />
-        </div>
+        </motion.div>
       </main>
     </div>
   );

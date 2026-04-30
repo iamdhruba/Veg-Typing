@@ -69,18 +69,18 @@ const Settings = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto w-full px-8 md:px-12 py-16">
+    <div className="max-w-4xl mx-auto w-full px-4 sm:px-8 md:px-12 py-8 sm:py-16">
       <SEO
         title="Settings — VEG Typewriter"
         description="Configure your VEG typewriter settings, choose themes, and manage your data."
         path="/settings"
         keywords="typewriter settings, VEG config"
       />
-      <h1 className="text-5xl font-black mb-20 tracking-tighter uppercase text-on-background">System Configuration</h1>
+      <h1 className="text-3xl sm:text-5xl font-black mb-10 sm:mb-20 tracking-tighter uppercase text-on-background">System Configuration</h1>
 
       <div className="space-y-4">
         {/* Visual Environment */}
-        <section className="bg-surface-container/5 p-10 relative overflow-hidden">
+        <section className="bg-surface-container/5 p-4 sm:p-10 relative overflow-hidden">
           <div className="flex items-center gap-3 mb-10">
             <div className="h-px w-4 bg-primary/40" />
             <h3 className="text-[10px] font-black text-on-background/40 uppercase tracking-[0.3em]">Visual Environment</h3>
@@ -119,12 +119,12 @@ const Settings = () => {
         </div>
 
         {/* Experience */}
-        <section className="bg-surface-container/5 p-10">
+        <section className="bg-surface-container/5 p-4 sm:p-10">
           <div className="flex items-center gap-3 mb-10">
             <div className="h-px w-4 bg-primary/40" />
             <h3 className="text-[10px] font-black text-on-background/50 uppercase tracking-[0.3em]">Experience</h3>
           </div>
-          <div className="flex justify-between items-center bg-surface-container p-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 bg-surface-container p-4 sm:p-8">
             <div>
               <p className="font-black text-xs uppercase tracking-widest text-on-surface">Typing Sound</p>
               <p className="text-[10px] text-on-surface/60 uppercase mt-1 tracking-wider">Mechanical feedback on every stroke.</p>
@@ -143,12 +143,12 @@ const Settings = () => {
         </div>
 
         {/* Language & Script */}
-        <section className="bg-surface-container/5 p-10">
+        <section className="bg-surface-container/5 p-4 sm:p-10">
           <div className="flex items-center gap-3 mb-10">
             <div className="h-px w-4 bg-primary/40" />
             <h3 className="text-[10px] font-black text-on-background/50 uppercase tracking-[0.3em]">Language & Script</h3>
           </div>
-          <div className="flex justify-between items-center bg-surface-container p-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 bg-surface-container p-4 sm:p-8">
             <div>
               <p className="font-black text-xs uppercase tracking-widest text-on-surface">Primary Language</p>
               <p className="text-[10px] text-on-surface/60 uppercase mt-1 tracking-wider">Used for the interface and default tests.</p>
@@ -166,13 +166,13 @@ const Settings = () => {
         </section>
 
         {/* UI Customization */}
-        <section className="bg-surface-container/5 p-10">
+        <section className="bg-surface-container/5 p-4 sm:p-10">
           <div className="flex items-center gap-3 mb-10">
             <div className="h-px w-4 bg-primary/40" />
             <h3 className="text-[10px] font-black text-on-background/50 uppercase tracking-[0.3em]">Typing Interface</h3>
           </div>
           
-          <div className="flex justify-between items-center bg-surface-container p-8 mb-2">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 bg-surface-container p-4 sm:p-8 mb-2">
             <div>
               <p className="font-black text-xs uppercase tracking-widest text-on-surface">Caret Style</p>
               <p className="text-[10px] text-on-surface/60 uppercase mt-1 tracking-wider">Cursor appearance during tests.</p>
@@ -188,7 +188,7 @@ const Settings = () => {
             </select>
           </div>
 
-          <div className="flex justify-between items-center bg-surface-container p-8 mb-2">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 bg-surface-container p-4 sm:p-8 mb-2">
             <div>
               <p className="font-black text-xs uppercase tracking-widest text-on-surface">Font Size</p>
               <p className="text-[10px] text-on-surface/60 uppercase mt-1 tracking-wider">Adjust text size in the typing arena.</p>
@@ -204,7 +204,7 @@ const Settings = () => {
             </select>
           </div>
 
-          <div className="flex justify-between items-center bg-surface-container p-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 bg-surface-container p-4 sm:p-8">
             <div>
               <p className="font-black text-xs uppercase tracking-widest text-on-surface">Virtual Guide Keyboard</p>
               <p className="text-[10px] text-on-surface/60 uppercase mt-1 tracking-wider">Show a live keyboard on the test screen highlighting the next key.</p>
@@ -219,13 +219,13 @@ const Settings = () => {
         </section>
 
         {/* Data Management */}
-        <section className="bg-surface-container/5 p-10">
+        <section className="bg-surface-container/5 p-4 sm:p-10">
           <div className="flex items-center gap-3 mb-10">
             <div className="h-px w-4 bg-primary/40" />
             <h3 className="text-[10px] font-black text-on-background/50 uppercase tracking-[0.3em]">Data Management</h3>
           </div>
           <div className="flex flex-col gap-3">
-            <div className="flex justify-between items-center bg-surface-container p-8">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 bg-surface-container p-4 sm:p-8">
               <div>
                 <p className="font-black text-xs uppercase tracking-widest text-on-surface">Export Telemetry</p>
                 <p className="text-[10px] text-on-surface/60 uppercase mt-1 tracking-wider">Download your typing history as JSON.</p>
@@ -248,7 +248,7 @@ const Settings = () => {
                 Download JSON
               </button>
             </div>
-            <div className="flex justify-between items-center bg-surface-container p-8 border-t border-outline/5">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 bg-surface-container p-4 sm:p-8 border-t border-outline/5">
               <div>
                 <p className="font-black text-xs uppercase tracking-widest text-on-surface">Import Telemetry</p>
                 <p className="text-[10px] text-on-surface/60 uppercase mt-1 tracking-wider">Restore history from a JSON backup.</p>
@@ -287,12 +287,12 @@ const Settings = () => {
         </div>
 
         {/* Destructive Actions */}
-        <section className="bg-primary/5 p-10">
+        <section className="bg-primary/5 p-4 sm:p-10">
           <div className="flex items-center gap-3 mb-10">
             <div className="h-px w-4 bg-primary/40" />
             <h3 className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Destructive Actions</h3>
           </div>
-          <div className="flex justify-between items-center bg-surface-container p-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 bg-surface-container p-4 sm:p-8">
             <div>
               <p className="font-black text-xs uppercase tracking-widest text-primary">Clear Statistics</p>
               <p className="text-[10px] text-on-surface/60 uppercase mt-1 tracking-wider">This action cannot be undone.</p>

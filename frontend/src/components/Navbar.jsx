@@ -16,7 +16,7 @@ const Navbar = React.memo(() => {
 
   return (
     <header className="bg-surface/90 backdrop-blur-xl sticky top-0 z-50">
-      <div className="flex justify-between items-center w-full px-12 py-6 max-w-7xl mx-auto">
+      <div className="flex flex-col md:flex-row justify-between items-center w-full px-4 sm:px-8 md:px-12 py-4 md:py-6 max-w-7xl mx-auto gap-4 md:gap-0">
         <Link 
           to="/" 
           onClick={() => setResult(null)}
@@ -24,7 +24,7 @@ const Navbar = React.memo(() => {
         >
           VEG.
         </Link>
-        <nav className="flex items-center gap-8">
+        <nav className="flex items-center gap-4 sm:gap-6 md:gap-8 flex-wrap justify-center">
           <Link 
             to="/" 
             onClick={() => setResult(null)}
@@ -37,7 +37,7 @@ const Navbar = React.memo(() => {
           <Link to="/leaderboard" className="font-manrope tracking-tighter uppercase font-bold text-xs text-on-background/60 hover:text-primary transition-colors duration-200">LEADERBOARD</Link>
           <Link to="/settings" className="font-manrope tracking-tighter uppercase font-bold text-xs text-on-background/60 hover:text-primary transition-colors duration-200">SETTINGS</Link>
         </nav>
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4 sm:gap-6">
           {user ? (
             <>
               <Link to="/stats" aria-label="View Stats" className="material-symbols-outlined text-on-background/60 hover:text-primary transition-colors">analytics</Link>

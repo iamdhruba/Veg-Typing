@@ -72,7 +72,7 @@ const Leaderboard = () => {
       variants={containerVars}
       initial="hidden"
       animate="show"
-      className="max-w-7xl mx-auto w-full px-8 md:px-12 py-16"
+      className="max-w-7xl mx-auto w-full px-4 sm:px-8 md:px-12 py-8 sm:py-16"
     >
       <SEO
         title="Nepali Typing Leaderboard — Fastest Typists in Nepal | VEG"
@@ -86,7 +86,7 @@ const Leaderboard = () => {
             <div className="h-px w-8 bg-primary" />
             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Global Dominance Matrix</span>
           </div>
-          <h1 className="text-6xl md:text-8xl font-black tracking-tighter uppercase leading-none">
+          <h1 className="text-4xl sm:text-6xl md:text-8xl font-black tracking-tighter uppercase leading-none">
             Hall of Fame
           </h1>
         </div>
@@ -219,11 +219,11 @@ const Leaderboard = () => {
 
           {/* List Overhaul */}
           <motion.div variants={itemVars} className="bg-surface-container/30 border border-outline/10">
-            <div className="grid grid-cols-12 gap-8 px-10 py-6 bg-surface-container-high/50">
-              <div className="col-span-1 text-[10px] font-black text-on-background/40 uppercase tracking-[0.3em]">Rank</div>
-              <div className="col-span-6 text-[10px] font-black text-on-background/40 uppercase tracking-[0.3em]">Competitor</div>
-              <div className="col-span-2 text-[10px] font-black text-on-background/40 uppercase tracking-[0.3em] text-right">Velocity</div>
-              <div className="col-span-3 text-[10px] font-black text-on-background/40 uppercase tracking-[0.3em] text-right">Precision</div>
+            <div className="grid grid-cols-12 gap-2 sm:gap-8 px-4 sm:px-10 py-6 bg-surface-container-high/50">
+              <div className="col-span-2 sm:col-span-1 text-[8px] sm:text-[10px] font-black text-on-background/40 uppercase tracking-[0.1em] sm:tracking-[0.3em]">Rank</div>
+              <div className="col-span-6 text-[8px] sm:text-[10px] font-black text-on-background/40 uppercase tracking-[0.1em] sm:tracking-[0.3em]">Competitor</div>
+              <div className="col-span-4 sm:col-span-2 text-[8px] sm:text-[10px] font-black text-on-background/40 uppercase tracking-[0.1em] sm:tracking-[0.3em] text-right">Velocity</div>
+              <div className="col-span-12 sm:col-span-3 text-[10px] font-black text-on-background/40 uppercase tracking-[0.3em] text-right hidden sm:block">Precision</div>
             </div>
             <div className="">
               {leaderboard.map((r, i) => {
@@ -232,30 +232,30 @@ const Leaderboard = () => {
                   <motion.div 
                     key={r._id}
                     whileHover={{ backgroundColor: 'rgba(255,255,255,0.02)' }}
-                    className={`grid grid-cols-12 gap-8 px-10 py-8 items-center transition-colors group ${isMe ? 'bg-primary/5 border-l-4 border-primary' : ''}`}
+                    className={`grid grid-cols-12 gap-2 sm:gap-8 px-4 sm:px-10 py-4 sm:py-8 items-center transition-colors group ${isMe ? 'bg-primary/5 border-l-4 border-primary' : ''}`}
                   >
-                  <div className="col-span-1">
-                    <span className={`text-xl font-black ${i < 3 ? 'text-primary' : 'text-on-background/20'}`}>
+                  <div className="col-span-2 sm:col-span-1">
+                    <span className={`text-lg sm:text-xl font-black ${i < 3 ? 'text-primary' : 'text-on-background/20'}`}>
                       {i + 1 < 10 ? `0${i + 1}` : i + 1}
                     </span>
                   </div>
-                  <div className="col-span-6 flex items-center gap-6">
-                    <div className="w-10 h-10 bg-surface-container-high flex items-center justify-center relative overflow-hidden">
+                  <div className="col-span-6 flex items-center gap-2 sm:gap-6">
+                    <div className="hidden sm:flex w-10 h-10 bg-surface-container-high items-center justify-center relative overflow-hidden">
                       <div className="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors" />
                       <span className="text-xs font-black text-on-background/30 relative z-10">{r.userId?.username?.[0].toUpperCase()}</span>
                     </div>
                     <div>
-                      <p className="text-sm font-black uppercase tracking-tight text-on-background/80 group-hover:text-primary transition-colors">{r.userId?.username}</p>
-                      <p className="text-[10px] font-bold text-on-background/40 uppercase tracking-widest mt-1">{format(new Date(r.timestamp), 'MMM dd, yyyy')}</p>
+                      <p className="text-xs sm:text-sm font-black uppercase tracking-tight text-on-background/80 group-hover:text-primary transition-colors truncate max-w-[100px] sm:max-w-[200px]">{r.userId?.username}</p>
+                      <p className="text-[8px] sm:text-[10px] font-bold text-on-background/40 uppercase tracking-widest mt-1 hidden sm:block">{format(new Date(r.timestamp), 'MMM dd, yyyy')}</p>
                     </div>
                   </div>
-                  <div className="col-span-2 text-right">
-                    <div className="flex items-baseline justify-end gap-2">
-                      <span className="text-2xl font-black text-on-background/80">{r.wpm}</span>
-                      <span className="text-[10px] font-black text-on-background/40">WPM</span>
+                  <div className="col-span-4 sm:col-span-2 text-right">
+                    <div className="flex items-baseline justify-end gap-1 sm:gap-2">
+                      <span className="text-xl sm:text-2xl font-black text-on-background/80">{r.wpm}</span>
+                      <span className="text-[8px] sm:text-[10px] font-black text-on-background/40">WPM</span>
                     </div>
                   </div>
-                  <div className="col-span-3 text-right">
+                  <div className="col-span-12 sm:col-span-3 text-right hidden sm:block">
                     <div className="flex flex-col items-end">
                       <p className="text-lg font-black text-on-background/60">{r.accuracy}%</p>
                       <div className="w-24 h-[2px] bg-outline/20 mt-2 overflow-hidden">

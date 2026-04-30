@@ -139,7 +139,7 @@ const Stats = () => {
       variants={containerVars}
       initial="hidden"
       animate="visible"
-      className="max-w-7xl mx-auto w-full px-6 py-20"
+      className="max-w-7xl mx-auto w-full px-4 sm:px-6 md:px-12 py-8 sm:py-20"
     >
       <SEO
         title="My Typing Stats — Performance & Heatmaps | VEG"
@@ -147,9 +147,9 @@ const Stats = () => {
         path="/stats"
         keywords="typing stats, Nepali typing heatmap, WPM history"
       />
-      <header className="mb-16 flex justify-between items-end">
+      <header className="mb-10 sm:mb-16 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 sm:gap-0">
         <div>
-          <h1 className="text-6xl font-black mb-4 tracking-tighter uppercase text-on-background">Personal Matrix</h1>
+          <h1 className="text-4xl sm:text-6xl font-black mb-2 sm:mb-4 tracking-tighter uppercase text-on-background">Personal Matrix</h1>
           <p className="text-[10px] font-black text-on-background/40 uppercase tracking-[0.4em]">Performance Intelligence Report</p>
         </div>
         <div className="flex items-center gap-6">
@@ -160,7 +160,7 @@ const Stats = () => {
             <span className="material-symbols-outlined text-sm text-on-background/60 group-hover:text-primary transition-colors">download</span>
             <span className="text-[10px] font-black uppercase tracking-widest text-on-background/60 group-hover:text-primary transition-colors">Export CSV</span>
           </button>
-          <div className="w-px h-8 bg-outline/10"></div>
+          <div className="hidden sm:block w-px h-8 bg-outline/10"></div>
           <div className="flex items-center gap-4">
             <div className="text-right">
               <p className="text-2xl font-black text-primary">{unlockedCount}/{achievements.length}</p>
@@ -173,7 +173,7 @@ const Stats = () => {
 
       {/* Achievements Section */}
       <motion.div variants={itemVars} className="mb-16">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-1">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-1">
           {achievements.map((a) => (
             <div 
               key={a.id}
@@ -216,7 +216,7 @@ const Stats = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-1 mb-1">
         {/* Main Chart Card */}
-        <motion.div variants={itemVars} className="lg:col-span-2 bg-surface-container-low border border-outline/10 p-12 relative overflow-hidden">
+        <motion.div variants={itemVars} className="lg:col-span-2 bg-surface-container-low border border-outline/10 p-4 sm:p-12 relative overflow-hidden">
           <div className="flex justify-between items-center mb-16 relative z-10">
             <div>
               <h3 className="text-[10px] font-black uppercase tracking-widest mb-1 text-on-background/40">Velocity Progression</h3>
@@ -269,7 +269,7 @@ const Stats = () => {
         </motion.div>
 
         {/* Identity Details */}
-        <motion.div variants={itemVars} className="bg-surface-container-low border border-outline/10 p-12 flex flex-col justify-center items-center text-center">
+        <motion.div variants={itemVars} className="bg-surface-container-low border border-outline/10 p-4 sm:p-12 flex flex-col justify-center items-center text-center">
           <div className="w-36 h-36 bg-surface-container-high rounded-full flex items-center justify-center mb-10 relative">
             <div className="absolute inset-0 border border-primary/20 rounded-full animate-ping opacity-5" />
             <span className="text-5xl font-black text-primary/60">{user?.username?.[0]?.toUpperCase() || 'U'}</span>
@@ -294,14 +294,14 @@ const Stats = () => {
       </div>
 
       {/* Heatmap Section */}
-      <motion.div variants={itemVars} className="bg-surface-container/5 backdrop-blur-md p-12 mb-1">
-        <div className="flex justify-between items-center mb-12">
+      <motion.div variants={itemVars} className="bg-surface-container/5 backdrop-blur-md p-4 sm:p-12 mb-1">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 sm:mb-12 gap-6 md:gap-0">
           <div>
             <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-on-background/40">Character Accuracy Matrix</h3>
             <p className="text-[9px] font-bold text-on-background/20 uppercase tracking-widest mt-1">Layout Performance Mapping</p>
           </div>
-          <div className="flex items-center gap-8">
-            <div className="flex bg-surface-container p-1 gap-1">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8">
+            <div className="flex bg-surface-container p-1 gap-1 flex-wrap">
               {['english', 'preeti', 'unicode'].map(l => (
                 <button
                   key={l}
@@ -312,7 +312,7 @@ const Stats = () => {
                 </button>
               ))}
             </div>
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-2 sm:gap-4">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-primary/40 border border-primary/60" />
                 <span className="text-[8px] font-bold text-on-background/30 uppercase">Excellent</span>
@@ -354,7 +354,7 @@ const Stats = () => {
             <motion.div 
               key={r._id} 
               whileHover={{ backgroundColor: 'rgba(255,255,255,0.02)' }}
-              className="flex flex-col md:flex-row items-center justify-between p-8 gap-8 transition-colors"
+              className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-8 gap-4 sm:gap-8 transition-colors"
             >
               <div className="flex items-center gap-12 w-full md:w-auto">
                 <div className="text-on-background/10 font-mono text-[10px]">0{i+1}</div>

@@ -157,9 +157,9 @@ const TypingBox = ({ words, mode, duration, language, onFinish, pbWpm = 0, socke
 
   return (
     <div className="w-full max-w-5xl mx-auto" onClick={() => inputRef.current?.focus()}>
-      <div className="flex justify-between items-center mb-8 font-mono text-on-background/50">
-        <div className="text-2xl font-bold text-primary">{timeLeft}s</div>
-        <div className="flex-1 mx-12 h-[2px] bg-outline/10 relative overflow-hidden">
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-8 font-mono text-on-background/50 gap-2 sm:gap-0">
+        <div className="text-xl sm:text-2xl font-bold text-primary">{timeLeft}s</div>
+        <div className="flex-1 w-full sm:w-auto sm:mx-12 h-[2px] bg-outline/10 relative overflow-hidden">
           {pbWpm > 0 && (
             <div className="absolute left-0 top-0 h-full bg-primary/20 transition-all duration-500 ease-linear"
               style={{ width: `${(ghostIdx / words.length) * 100}%` }} />
