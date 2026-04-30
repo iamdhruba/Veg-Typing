@@ -7,7 +7,7 @@ Disallow: /api/
 Crawl-delay: 1
 
 # Sitemap
-Sitemap: https://vegtypewriter.com/sitemap.xml
+Sitemap: https://veg-typing.vercel.app/sitemap.xml
 
 # Google
 User-agent: Googlebot
