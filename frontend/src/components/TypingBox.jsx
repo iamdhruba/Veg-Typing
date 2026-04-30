@@ -75,55 +75,38 @@ const TypingBox = ({ words, mode, duration, language, onFinish, pbWpm = 0, socke
 
   usePreetiInput(handleCharInsert);
 
-  const [lines, setLines] = React.useState([]);
+  const [lineOffsets, setLineOffsets] = React.useState([]);
   const [currentLine, setCurrentLine] = React.useState(0);
-  const measureRef = useRef(null);
+  const wordRefsMap = useRef({});
+  const linesLockedRef = useRef(false);
 
-  // Pre-compute lines by measuring word widths
+  // After words render, read offsetTop of each word to lock line positions
   useEffect(() => {
-    if (!measureRef.current) return;
-    const containerWidth = measureRef.current.offsetWidth;
-    const gap = 16; // gap-x-4 = 1rem = 16px
-    const computed = [];
-    let row = [];
-    let rowWidth = 0;
-
-    words.forEach((word, i) => {
-      // measure word width using a temp span
-      const span = document.createElement('span');
-      span.style.visibility = 'hidden';
-      span.style.position = 'absolute';
-      span.style.whiteSpace = 'nowrap';
-      span.style.font = window.getComputedStyle(measureRef.current).font;
-      span.textContent = word;
-      measureRef.current.appendChild(span);
-      const w = span.offsetWidth;
-      measureRef.current.removeChild(span);
-
-      const needed = row.length === 0 ? w : w + gap;
-      if (row.length > 0 && rowWidth + needed > containerWidth) {
-        computed.push(row);
-        row = [i];
-        rowWidth = w;
-      } else {
-        row.push(i);
-        rowWidth += needed;
-      }
-    });
-    if (row.length) computed.push(row);
-    setLines(computed);
+    linesLockedRef.current = false;
+    setLineOffsets([]);
     setCurrentLine(0);
+    wordRefsMap.current = {};
   }, [words]);
 
-  // Advance line when active word moves past current line
+  const lockLines = useCallback(() => {
+    if (linesLockedRef.current) return;
+    const refs = wordRefsMap.current;
+    if (Object.keys(refs).length !== words.length) return;
+    const offsets = words.map((_, i) => refs[i]?.offsetTop ?? 0);
+    setLineOffsets(offsets);
+    linesLockedRef.current = true;
+  }, [words]);
+
+  // Advance line when active word moves to a new offsetTop
   useEffect(() => {
-    if (!lines.length) return;
-    const lineIdx = lines.findIndex(line => line.includes(currentWordIdx));
-    if (lineIdx > 0 && lineIdx !== currentLine) {
+    if (!lineOffsets.length) return;
+    const activeOffset = lineOffsets[currentWordIdx] ?? 0;
+    const lineIdx = [...new Set(lineOffsets)].sort((a,b)=>a-b).indexOf(activeOffset);
+    if (lineIdx > currentLine) {
       setCurrentLine(lineIdx);
       if (soundEnabled) playTypewriterDing();
     }
-  }, [currentWordIdx, lines, soundEnabled]);
+  }, [currentWordIdx, lineOffsets, soundEnabled]);
 
   useEffect(() => {
     if (status === 'finished') {
@@ -164,63 +147,67 @@ const TypingBox = ({ words, mode, duration, language, onFinish, pbWpm = 0, socke
         </div>
       </div>
 
-      <div ref={measureRef} className={`relative ${fontSize} leading-relaxed ${language === 'preeti' ? 'tracking-normal' : 'tracking-wide'} select-none h-[9rem] overflow-hidden typing-container-${language}`}>
-        {/* Words area - lines pre-computed, no reflow */}
+      <div className={`relative ${fontSize} leading-relaxed ${language === 'preeti' ? 'tracking-normal' : 'tracking-wide'} select-none h-[9rem] overflow-hidden typing-container-${language}`}>
         <div
           ref={wordsContainerRef}
-          style={{ transform: `translateY(calc(-${currentLine} * 3rem))`, transition: 'transform 0.15s ease' }}
+          style={{
+            transform: lineOffsets.length
+              ? `translateY(-${[...new Set(lineOffsets)].sort((a,b)=>a-b)[currentLine] ?? 0}px)`
+              : 'translateY(0)',
+            transition: 'transform 0.15s ease'
+          }}
+          className={`flex flex-wrap gap-x-4`}
         >
-          {lines.map((lineWordIdxs, lIdx) => (
-            <div key={lIdx} className="flex gap-x-4 h-[3rem] items-center">
-              {lineWordIdxs.map(wIdx => {
-                const isCurrent = wIdx === currentWordIdx;
-                const isPast = wIdx < currentWordIdx;
-                const wordGraphemes = memoizedWords[wIdx];
-                const typedGraphemes = typedHistory[wIdx] ? splitGraphemes(typedHistory[wIdx], language) : [];
-                const currentGraphemes = splitGraphemes(currentInput, language);
+          {words.map((word, wIdx) => {
+            const isCurrent = wIdx === currentWordIdx;
+            const isPast = wIdx < currentWordIdx;
+            const wordGraphemes = memoizedWords[wIdx];
+            const typedGraphemes = typedHistory[wIdx] ? splitGraphemes(typedHistory[wIdx], language) : [];
+            const currentGraphemes = splitGraphemes(currentInput, language);
 
-                return (
-                  <span
-                    key={wIdx}
-                    ref={isCurrent ? activeWordRef : null}
-                    className={`relative flex items-center transition-colors duration-200 ${isCurrent ? 'text-on-background' : 'text-on-background/30'}`}
-                  >
-                    {wordGraphemes.map((char, cIdx) => {
-                      let stateClass = 'text-on-background/30';
-                      if (isPast) {
-                        stateClass = typedGraphemes[cIdx] !== undefined
-                          ? (typedGraphemes[cIdx] === char ? 'text-correct' : 'text-error')
-                          : 'text-error';
-                      } else if (isCurrent) {
-                        stateClass = cIdx < currentGraphemes.length
-                          ? (charStates[cIdx] === 'correct' ? 'text-correct' : 'text-error')
-                          : 'text-on-background/40';
-                      }
-                      return (
-                        <span key={cIdx} className={`relative transition-colors ${stateClass}`}>
-                          {isCurrent && cIdx === currentGraphemes.length && <Caret />}
-                          {char}
-                        </span>
-                      );
-                    })}
-                    {(isPast || isCurrent) && (isPast ? typedGraphemes : currentGraphemes).length > wordGraphemes.length && (
-                      <span className="text-error opacity-70 flex">
-                        {(isPast ? typedGraphemes : currentGraphemes).slice(wordGraphemes.length).map((char, i) => (
-                          <span key={i} className="relative">
-                            {isCurrent && (i + wordGraphemes.length) === currentGraphemes.length && <Caret />}
-                            {char}
-                          </span>
-                        ))}
+            return (
+              <span
+                key={wIdx}
+                ref={el => {
+                  wordRefsMap.current[wIdx] = el;
+                  if (el && Object.keys(wordRefsMap.current).length === words.length) lockLines();
+                }}
+                className={`relative flex items-center transition-colors duration-200 ${isCurrent ? 'text-on-background' : 'text-on-background/30'}`}
+              >
+                {wordGraphemes.map((char, cIdx) => {
+                  let stateClass = 'text-on-background/30';
+                  if (isPast) {
+                    stateClass = typedGraphemes[cIdx] !== undefined
+                      ? (typedGraphemes[cIdx] === char ? 'text-correct' : 'text-error')
+                      : 'text-error';
+                  } else if (isCurrent) {
+                    stateClass = cIdx < currentGraphemes.length
+                      ? (charStates[cIdx] === 'correct' ? 'text-correct' : 'text-error')
+                      : 'text-on-background/40';
+                  }
+                  return (
+                    <span key={cIdx} className={`relative transition-colors ${stateClass}`}>
+                      {isCurrent && cIdx === currentGraphemes.length && <Caret />}
+                      {char}
+                    </span>
+                  );
+                })}
+                {(isPast || isCurrent) && (isPast ? typedGraphemes : currentGraphemes).length > wordGraphemes.length && (
+                  <span className="text-error opacity-70 flex">
+                    {(isPast ? typedGraphemes : currentGraphemes).slice(wordGraphemes.length).map((char, i) => (
+                      <span key={i} className="relative">
+                        {isCurrent && (i + wordGraphemes.length) === currentGraphemes.length && <Caret />}
+                        {char}
                       </span>
-                    )}
-                    {isCurrent && currentGraphemes.length === wordGraphemes.length && (
-                      <span className="relative w-0 h-full"><Caret /></span>
-                    )}
+                    ))}
                   </span>
-                );
-              })}
-            </div>
-          ))}
+                )}
+                {isCurrent && currentGraphemes.length === wordGraphemes.length && (
+                  <span className="relative w-0 h-full"><Caret /></span>
+                )}
+              </span>
+            );
+          })}
         </div>
 
         {/* Hidden Input */}
