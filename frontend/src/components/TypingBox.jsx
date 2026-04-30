@@ -155,7 +155,7 @@ const TypingBox = ({ words, mode, duration, language, onFinish, pbWpm = 0, socke
               <span 
                 key={wIdx} 
                 ref={isCurrent ? activeWordRef : null}
-                className={`relative flex items-center px-1 rounded-sm transition-colors duration-200 ${isCurrent ? 'bg-primary/10 text-on-background' : 'bg-transparent text-on-background/30'}`}
+                className={`relative flex items-center transition-colors duration-200 ${isCurrent ? 'text-on-background' : 'text-on-background/30'}`}
               >
                 {wordGraphemes.map((char, cIdx) => {
                   let stateClass = 'text-on-background/30';
