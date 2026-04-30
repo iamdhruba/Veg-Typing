@@ -75,26 +75,55 @@ const TypingBox = ({ words, mode, duration, language, onFinish, pbWpm = 0, socke
 
   usePreetiInput(handleCharInsert);
 
-  const currentRowRef = useRef(0);
+  const [lines, setLines] = React.useState([]);
+  const [currentLine, setCurrentLine] = React.useState(0);
+  const measureRef = useRef(null);
 
+  // Pre-compute lines by measuring word widths
   useEffect(() => {
-    currentRowRef.current = 0;
-    if (wordsContainerRef.current) wordsContainerRef.current.scrollTop = 0;
+    if (!measureRef.current) return;
+    const containerWidth = measureRef.current.offsetWidth;
+    const gap = 16; // gap-x-4 = 1rem = 16px
+    const computed = [];
+    let row = [];
+    let rowWidth = 0;
+
+    words.forEach((word, i) => {
+      // measure word width using a temp span
+      const span = document.createElement('span');
+      span.style.visibility = 'hidden';
+      span.style.position = 'absolute';
+      span.style.whiteSpace = 'nowrap';
+      span.style.font = window.getComputedStyle(measureRef.current).font;
+      span.textContent = word;
+      measureRef.current.appendChild(span);
+      const w = span.offsetWidth;
+      measureRef.current.removeChild(span);
+
+      const needed = row.length === 0 ? w : w + gap;
+      if (row.length > 0 && rowWidth + needed > containerWidth) {
+        computed.push(row);
+        row = [i];
+        rowWidth = w;
+      } else {
+        row.push(i);
+        rowWidth += needed;
+      }
+    });
+    if (row.length) computed.push(row);
+    setLines(computed);
+    setCurrentLine(0);
   }, [words]);
 
+  // Advance line when active word moves past current line
   useEffect(() => {
-    if (activeWordRef.current && wordsContainerRef.current) {
-      const activeTop = activeWordRef.current.offsetTop;
-      const lineHeight = activeWordRef.current.offsetHeight;
-      const currentRow = Math.round(activeTop / lineHeight);
-
-      if (currentRow > currentRowRef.current) {
-        currentRowRef.current = currentRow;
-        wordsContainerRef.current.scrollTop = (currentRow - 1) * lineHeight;
-        if (soundEnabled) playTypewriterDing();
-      }
+    if (!lines.length) return;
+    const lineIdx = lines.findIndex(line => line.includes(currentWordIdx));
+    if (lineIdx > 0 && lineIdx !== currentLine) {
+      setCurrentLine(lineIdx);
+      if (soundEnabled) playTypewriterDing();
     }
-  }, [currentWordIdx, soundEnabled]);
+  }, [currentWordIdx, lines, soundEnabled]);
 
   useEffect(() => {
     if (status === 'finished') {
@@ -109,13 +138,6 @@ const TypingBox = ({ words, mode, duration, language, onFinish, pbWpm = 0, socke
   const memoizedWords = useMemo(() => {
     return words.map(word => splitGraphemes(word, language));
   }, [words, language]);
-
-  // Only render visible words (windowing)
-  const visibleRange = useMemo(() => {
-    const start = Math.max(0, currentWordIdx - 20);
-    const end = Math.min(words.length, currentWordIdx + 80);
-    return { start, end };
-  }, [currentWordIdx, words.length]);
 
   return (
     <div className="w-full max-w-5xl mx-auto" onClick={focusInput}>
@@ -142,74 +164,63 @@ const TypingBox = ({ words, mode, duration, language, onFinish, pbWpm = 0, socke
         </div>
       </div>
 
-      <div className={`relative ${fontSize} leading-relaxed ${language === 'preeti' ? 'tracking-normal' : 'tracking-wide'} select-none h-[320px] overflow-hidden typing-container-${language}`}>
-        {/* Words area */}
-        <div 
+      <div ref={measureRef} className={`relative ${fontSize} leading-relaxed ${language === 'preeti' ? 'tracking-normal' : 'tracking-wide'} select-none h-[9rem] overflow-hidden typing-container-${language}`}>
+        {/* Words area - lines pre-computed, no reflow */}
+        <div
           ref={wordsContainerRef}
-          className="flex flex-wrap gap-x-4"
-          style={{ maxHeight: '100%', overflowY: 'scroll', scrollbarWidth: 'none' }}
+          style={{ transform: `translateY(calc(-${currentLine} * 3rem))`, transition: 'transform 0.15s ease' }}
         >
-          {words.slice(visibleRange.start, visibleRange.end).map((word, relIdx) => {
-            const wIdx = visibleRange.start + relIdx;
-            const isCurrent = wIdx === currentWordIdx;
-            const isPast = wIdx < currentWordIdx;
-            
-            const wordGraphemes = memoizedWords[wIdx];
-            const typedGraphemes = typedHistory[wIdx] ? splitGraphemes(typedHistory[wIdx], language) : [];
-            const currentGraphemes = splitGraphemes(currentInput, language);
+          {lines.map((lineWordIdxs, lIdx) => (
+            <div key={lIdx} className="flex gap-x-4 h-[3rem] items-center">
+              {lineWordIdxs.map(wIdx => {
+                const isCurrent = wIdx === currentWordIdx;
+                const isPast = wIdx < currentWordIdx;
+                const wordGraphemes = memoizedWords[wIdx];
+                const typedGraphemes = typedHistory[wIdx] ? splitGraphemes(typedHistory[wIdx], language) : [];
+                const currentGraphemes = splitGraphemes(currentInput, language);
 
-            return (
-              <span 
-                key={wIdx} 
-                ref={isCurrent ? activeWordRef : null}
-                className={`relative flex items-center transition-colors duration-200 ${isCurrent ? 'text-on-background' : 'text-on-background/30'}`}
-              >
-                {wordGraphemes.map((char, cIdx) => {
-                  let stateClass = 'text-on-background/30';
-                  
-                  if (isPast) {
-                    if (typedGraphemes[cIdx] !== undefined) {
-                      stateClass = typedGraphemes[cIdx] === char ? 'text-correct' : 'text-error';
-                    } else {
-                      stateClass = 'text-error';
-                    }
-                  } else if (isCurrent) {
-                    if (cIdx < currentGraphemes.length) {
-                      stateClass = charStates[cIdx] === 'correct' ? 'text-correct' : 'text-error';
-                    } else {
-                      stateClass = 'text-on-background/40';
-                    }
-                  }
-
-                  return (
-                    <span key={cIdx} className={`relative transition-colors ${stateClass}`}>
-                      {isCurrent && cIdx === currentGraphemes.length && <Caret />}
-                      {char}
-                    </span>
-                  );
-                })}
-                
-                {/* Extra characters */}
-                {(isPast || isCurrent) && (isPast ? typedGraphemes : currentGraphemes).length > wordGraphemes.length && (
-                  <span className="text-error opacity-70 flex">
-                    {(isPast ? typedGraphemes : currentGraphemes).slice(wordGraphemes.length).map((char, i) => (
-                      <span key={i} className="relative">
-                        {isCurrent && (i + wordGraphemes.length) === currentGraphemes.length && <Caret />}
-                        {char}
+                return (
+                  <span
+                    key={wIdx}
+                    ref={isCurrent ? activeWordRef : null}
+                    className={`relative flex items-center transition-colors duration-200 ${isCurrent ? 'text-on-background' : 'text-on-background/30'}`}
+                  >
+                    {wordGraphemes.map((char, cIdx) => {
+                      let stateClass = 'text-on-background/30';
+                      if (isPast) {
+                        stateClass = typedGraphemes[cIdx] !== undefined
+                          ? (typedGraphemes[cIdx] === char ? 'text-correct' : 'text-error')
+                          : 'text-error';
+                      } else if (isCurrent) {
+                        stateClass = cIdx < currentGraphemes.length
+                          ? (charStates[cIdx] === 'correct' ? 'text-correct' : 'text-error')
+                          : 'text-on-background/40';
+                      }
+                      return (
+                        <span key={cIdx} className={`relative transition-colors ${stateClass}`}>
+                          {isCurrent && cIdx === currentGraphemes.length && <Caret />}
+                          {char}
+                        </span>
+                      );
+                    })}
+                    {(isPast || isCurrent) && (isPast ? typedGraphemes : currentGraphemes).length > wordGraphemes.length && (
+                      <span className="text-error opacity-70 flex">
+                        {(isPast ? typedGraphemes : currentGraphemes).slice(wordGraphemes.length).map((char, i) => (
+                          <span key={i} className="relative">
+                            {isCurrent && (i + wordGraphemes.length) === currentGraphemes.length && <Caret />}
+                            {char}
+                          </span>
+                        ))}
                       </span>
-                    ))}
+                    )}
+                    {isCurrent && currentGraphemes.length === wordGraphemes.length && (
+                      <span className="relative w-0 h-full"><Caret /></span>
+                    )}
                   </span>
-                )}
-                
-                {/* Caret at the very end of the word */}
-                {isCurrent && currentGraphemes.length === wordGraphemes.length && (
-                  <span className="relative w-0 h-full">
-                    <Caret />
-                  </span>
-                )}
-              </span>
-            );
-          })}
+                );
+              })}
+            </div>
+          ))}
         </div>
 
         {/* Hidden Input */}
