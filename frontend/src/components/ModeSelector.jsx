@@ -27,7 +27,7 @@ const ModeSelector = () => {
               }}
               className={`text-xs font-bold uppercase tracking-widest transition-colors ${language === lang && mode !== 'custom' ? 'text-primary' : 'text-on-background/50 hover:text-on-background/80'}`}
             >
-              {lang}
+              {lang === 'unicode' ? 'Romanized Unicode' : lang}
             </button>
           ))}
         </div>

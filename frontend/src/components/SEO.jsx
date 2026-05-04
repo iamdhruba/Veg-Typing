@@ -12,7 +12,7 @@ const SEO = ({
   const baseUrl = 'https://veg-typing.vercel.app';
   const fullUrl = `${baseUrl}${path}`;
   const ogImage = `${baseUrl}/og-image.png`;
-  const defaultKeywords = 'nepali typing online, online nepali typing, Nepali typing test, Preeti typing online, Unicode typing, typing speed, नेपाली टाइपिङ';
+  const defaultKeywords = 'nepali typing online, online nepali typing, Nepali typing test, Preeti typing online, Romanized Unicode typing, typing speed, नेपाली टाइपिङ';
 
   return (
     <Helmet>

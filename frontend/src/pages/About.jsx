@@ -26,7 +26,7 @@ const About = () => {
           <h2 className="text-xs font-bold text-primary uppercase tracking-[0.4em] mb-4">Supported Scripts</h2>
           <p>
             We support multiple input methods to cater to every typist. From the traditional <span className="text-on-background">Preeti</span> layout 
-            to modern <span className="text-on-background">Unicode</span> inputs, our engine ensures 
+            to modern <span className="text-on-background">Romanized Unicode</span> inputs, our engine ensures 
             low-latency feedback and precise character mapping.
           </p>
         </section>

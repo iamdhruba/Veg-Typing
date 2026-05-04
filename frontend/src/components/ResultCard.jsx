@@ -131,7 +131,7 @@ const ResultCard = ({ result, onRestart }) => {
 🔥 Speed: ${result.wpm} WPM
 🎯 Accuracy: ${result.accuracy}%
 📉 Consistency: ${result.consistency}%
-🌐 Language: ${result.language.toUpperCase()}
+🌐 Language: ${result.language === 'unicode' ? 'ROMANIZED UNICODE' : result.language.toUpperCase()}
 ⌨️ Master your Nepali typing at: ${window.location.origin}`;
             navigator.clipboard.writeText(text);
             alert('Results copied to clipboard! Ready to share.');

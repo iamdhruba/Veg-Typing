@@ -143,7 +143,7 @@ const Stats = () => {
     >
       <SEO
         title="My Typing Stats — Performance & Heatmaps | VEG"
-        description="View your Nepali typing history, WPM progress, and character accuracy heatmaps for Preeti and Unicode layouts."
+        description="View your Nepali typing history, WPM progress, and character accuracy heatmaps for Preeti and Romanized Unicode layouts."
         path="/stats"
         keywords="typing stats, Nepali typing heatmap, WPM history"
       />
@@ -308,7 +308,7 @@ const Stats = () => {
                   onClick={() => setHeatmapMode(l)}
                   className={`px-4 py-2 text-[8px] font-black uppercase tracking-widest transition-all ${heatmapMode === l ? 'bg-primary text-white' : 'text-on-background/40 hover:text-on-background/60'}`}
                 >
-                  {l}
+                  {l === 'unicode' ? 'Romanized Unicode' : l}
                 </button>
               ))}
             </div>
@@ -359,7 +359,7 @@ const Stats = () => {
               <div className="flex items-center gap-12 w-full md:w-auto">
                 <div className="text-on-background/10 font-mono text-[10px]">0{i+1}</div>
                 <div>
-                  <p className="text-xs font-black uppercase tracking-widest text-on-background/60">{r.language}</p>
+                  <p className="text-xs font-black uppercase tracking-widest text-on-background/60">{r.language === 'unicode' ? 'Romanized Unicode' : r.language}</p>
                   <p className="text-[9px] font-bold text-on-background/20 uppercase tracking-widest mt-1">{format(new Date(r.timestamp), 'MMM dd | HH:mm')}</p>
                 </div>
               </div>

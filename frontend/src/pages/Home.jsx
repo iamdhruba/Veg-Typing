@@ -158,10 +158,10 @@ const Home = () => {
   return (
     <div className={`max-w-7xl mx-auto w-full px-4 sm:px-8 md:px-12 py-8 md:py-16 flex flex-col items-center justify-center min-h-[80vh] ${result ? 'py-4' : ''}`}>
       <SEO
-        title="VEG — #1 Nepali Typing Online | Preeti & Unicode Speed Test"
-        description="Master Nepali typing online for free. Practice Preeti, Unicode, and English layouts with real-time WPM tracking, accuracy analytics, and AI drills."
+        title="VEG — #1 Nepali Typing Online | Preeti & Romanized Unicode Speed Test"
+        description="Master Nepali typing online for free. Practice Preeti, Romanized Unicode, and English layouts with real-time WPM tracking, accuracy analytics, and AI drills."
         path="/"
-        keywords="nepali typing online, online nepali typing, typing test, WPM test, Nepali speed test, Preeti keyboard online, नेपाली टाइपिङ अनलाइन"
+        keywords="nepali typing online, online nepali typing, typing test, WPM test, Nepali speed test, Preeti keyboard online, Romanized Unicode, नेपाली टाइपिङ अनलाइन"
       />
       <Toaster position="bottom-center" />
       

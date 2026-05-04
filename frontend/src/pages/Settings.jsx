@@ -160,7 +160,7 @@ const Settings = () => {
             >
               <option value="english">English</option>
               <option value="preeti">Preeti (Nepali)</option>
-              <option value="unicode">Unicode (Nepali)</option>
+              <option value="unicode">Romanized Unicode</option>
             </select>
           </div>
         </section>

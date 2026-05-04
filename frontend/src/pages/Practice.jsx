@@ -151,10 +151,10 @@ const Practice = () => {
   return (
     <div className="h-screen w-full flex flex-col md:flex-row bg-background overflow-hidden font-sans text-on-background selection:bg-primary/20">
       <SEO
-        title="Nepali Typing Practice Online | Learn Preeti & Unicode — VEG"
-        description="Learn Nepali typing online step-by-step with guided lessons. Practice Preeti, Unicode, and English layouts with progressive difficulty, finger guides, and XP system."
+        title="Nepali Typing Practice Online | Learn Preeti & Romanized Unicode — VEG"
+        description="Learn Nepali typing online step-by-step with guided lessons. Practice Preeti, Romanized Unicode, and English layouts with progressive difficulty, finger guides, and XP system."
         path="/practice"
-        keywords="nepali typing online, online nepali typing, Nepali typing lessons, Preeti keyboard practice, learn Unicode typing, typing finger guide, टाइपिङ अभ्यास"
+        keywords="nepali typing online, online nepali typing, Nepali typing lessons, Preeti keyboard practice, learn Romanized Unicode typing, typing finger guide, टाइपिङ अभ्यास"
       />
 
       <aside className="w-full md:w-80 border-b md:border-b-0 md:border-r border-outline/5 bg-white/5 p-4 sm:p-6 md:p-8 flex flex-col gap-6 md:gap-12 overflow-y-auto max-h-[30vh] md:max-h-full">
@@ -202,7 +202,7 @@ const Practice = () => {
                         transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                       />
                     )}
-                    <span className="relative z-10">{m}</span>
+                    <span className="relative z-10">{m === 'unicode' ? 'Romanized Unicode' : m}</span>
                   </button>
                 );
               })}
@@ -211,7 +211,7 @@ const Practice = () => {
 
           <section>
             <h5 className="text-[10px] font-medium text-on-background/30 uppercase tracking-[0.25em] mb-6">
-              {mode === 'preeti' ? 'Preeti' : mode === 'unicode' ? 'Unicode' : mode === 'english' ? 'English' : 'Curriculum'}
+              {mode === 'preeti' ? 'Preeti' : mode === 'unicode' ? 'Romanized Unicode' : mode === 'english' ? 'English' : 'Curriculum'}
             </h5>
             <div className="flex flex-col">
               {levels.map((lvl, idx) => {

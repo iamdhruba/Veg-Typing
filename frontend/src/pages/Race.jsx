@@ -251,7 +251,7 @@ const Race = () => {
                   onClick={() => setRaceLanguage(lang)}
                   className={`px-8 py-3 text-[10px] font-black uppercase tracking-widest transition-all ${raceLanguage === lang ? 'bg-primary text-white scale-105 shadow-xl shadow-primary/20' : 'text-on-background/50 hover:text-on-background/80 bg-surface-container/50'}`}
                 >
-                  {lang}
+                  {lang === 'unicode' ? 'Romanized Unicode' : lang}
                 </button>
               ))}
             </div>

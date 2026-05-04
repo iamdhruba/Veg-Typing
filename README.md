@@ -1,14 +1,14 @@
 # Veg Typing - Nepali Typing Test
 
-A modern, feature-rich Nepali typing test application supporting both Unicode and Preeti fonts with real-time multiplayer racing, practice modes, and comprehensive statistics tracking.
+A modern, feature-rich Nepali typing test application supporting both Romanized Unicode and Preeti fonts with real-time multiplayer racing, practice modes, and comprehensive statistics tracking.
 
 ## Features
 
 - **Multiple Typing Modes**
-  - Unicode typing support
+  - Romanized Unicode typing support
   - Preeti font typing support
   - Guided practice lessons with finger positioning
-  - **Multiplayer Arena**: Real-time racing with language-aware rooms (English, Preeti, Unicode) and automatic room cleanup.
+  - **Multiplayer Arena**: Real-time racing with language-aware rooms (English, Preeti, Romanized Unicode) and automatic room cleanup.
 
 - **Practice System**
   - Structured curriculum with progressive lessons
@@ -140,7 +140,7 @@ Veg-Typing/
 
 ### Typing Test
 1. Go to the Home page
-2. Select your preferred mode (Unicode/Preeti)
+2. Select your preferred mode (Romanized Unicode/Preeti)
 3. Choose test duration
 4. Start typing when ready
 5. View your results after completion
@@ -154,7 +154,7 @@ Veg-Typing/
 ## Key Mappings
 
 The application includes comprehensive key mappings for:
-- Unicode Nepali characters
+- Romanized Unicode Nepali characters
 - Preeti font characters
 - Consonants, vowels, and diacritics
 - Complex symbols and conjuncts

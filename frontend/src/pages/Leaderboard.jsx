@@ -76,7 +76,7 @@ const Leaderboard = () => {
     >
       <SEO
         title="Nepali Typing Leaderboard — Fastest Typists in Nepal | VEG"
-        description="See who types the fastest in Nepal! Global leaderboard rankings for Preeti, Unicode, and English typing. Compare your WPM with the best typists."
+        description="See who types the fastest in Nepal! Global leaderboard rankings for Preeti, Romanized Unicode, and English typing. Compare your WPM with the best typists."
         path="/leaderboard"
         keywords="typing leaderboard, fastest Nepali typist, WPM ranking, typing competition Nepal"
       />
@@ -117,7 +117,7 @@ const Leaderboard = () => {
                 onClick={() => setLanguage(lang)}
                 className={`px-6 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${language === lang ? 'bg-primary text-white' : 'text-on-background/50 hover:text-on-background/80'}`}
               >
-                {lang}
+                {lang === 'unicode' ? 'Romanized Unicode' : lang}
               </button>
             ))}
           </div>

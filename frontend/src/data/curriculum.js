@@ -148,50 +148,50 @@ export const CURRICULUM = {
 
   unicode: [
     // BASIC CONSONANTS (Velar, Palatal, Retroflex, Dental, Labial)
-    { id: "u1", title: "Unicode: Consonants: क ख ग घ ङ (k Shift+K g Shift+G Shift+<)", description: "Velar Consonants.", generator: "progressive", targetChars: ["क", "ख", "ग", "घ", "ङ"] },
-    { id: "u2", title: "Unicode: Consonants: च छ ज झ ञ (c Shift+C j Shift+J Shift+Y)", description: "Palatal Consonants.", generator: "progressive", targetChars: ["च", "छ", "ज", "झ", "ञ"] },
-    { id: "u3", title: "Unicode: Consonants: ट ठ ड ढ ण (q Shift+Q x Shift+X Shift+N)", description: "Retroflex Consonants.", generator: "progressive", targetChars: ["ट", "ठ", "ड", "ढ", "ण"] },
-    { id: "u4", title: "Unicode: Consonants: त थ द ध न (t Shift+T d Shift+D n)", description: "Dental Consonants.", generator: "progressive", targetChars: ["त", "थ", "द", "ध", "न"] },
-    { id: "u5", title: "Unicode: Consonants: प फ ब भ म (p Shift+P b Shift+B m)", description: "Labial Consonants.", generator: "progressive", targetChars: ["प", "फ", "ब", "भ", "म"] },
+    { id: "u1", title: "Romanized Unicode: Consonants: क ख ग घ ङ (k Shift+K g Shift+G Shift+<)", description: "Velar Consonants.", generator: "progressive", targetChars: ["क", "ख", "ग", "घ", "ङ"] },
+    { id: "u2", title: "Romanized Unicode: Consonants: च छ ज झ ञ (c Shift+C j Shift+J Shift+Y)", description: "Palatal Consonants.", generator: "progressive", targetChars: ["च", "छ", "ज", "झ", "ञ"] },
+    { id: "u3", title: "Romanized Unicode: Consonants: ट ठ ड ढ ण (q Shift+Q x Shift+X Shift+N)", description: "Retroflex Consonants.", generator: "progressive", targetChars: ["ट", "ठ", "ड", "ढ", "ण"] },
+    { id: "u4", title: "Romanized Unicode: Consonants: त थ द ध न (t Shift+T d Shift+D n)", description: "Dental Consonants.", generator: "progressive", targetChars: ["त", "थ", "द", "ध", "न"] },
+    { id: "u5", title: "Romanized Unicode: Consonants: प फ ब भ म (p Shift+P b Shift+B m)", description: "Labial Consonants.", generator: "progressive", targetChars: ["प", "फ", "ब", "भ", "म"] },
 
     // SEMI-VOWELS, SIBILANTS & FRICATIVES
-    { id: "u6", title: "Unicode: Consonants: य र ल व श (y r l v Shift+S)", description: "Semi-vowels & Palatal Sibilant.", generator: "progressive", targetChars: ["य", "र", "ल", "व", "श"] },
-    { id: "u7", title: "Unicode: Consonants: ष स ह (z s h)", description: "Fricatives.", generator: "progressive", targetChars: ["ष", "स", "ह"] },
+    { id: "u6", title: "Romanized Unicode: Consonants: य र ल व श (y r l v Shift+S)", description: "Semi-vowels & Palatal Sibilant.", generator: "progressive", targetChars: ["य", "र", "ल", "व", "श"] },
+    { id: "u7", title: "Romanized Unicode: Consonants: ष स ह (z s h)", description: "Fricatives.", generator: "progressive", targetChars: ["ष", "स", "ह"] },
 
     // PRIMARY VOWELS
-    { id: "u8", title: "Unicode: Vowels: अ आ इ ई (Shift+H Shift+A [ Shift+[)", description: "Primary Vowels.", generator: "progressive", targetChars: ["अ", "आ", "इ", "ई"] },
-    { id: "u9", title: "Unicode: Vowels: उ ऊ ऋ (f Shift+F Shift+Z)", description: "Secondary Vowels.", generator: "progressive", targetChars: ["उ", "ऊ", "ऋ"] },
-    { id: "u10", title: "Unicode: Vowels: ए ऐ ओ औ (] Shift+] Shift+O Shift+W)", description: "Diphthongs.", generator: "progressive", targetChars: ["ए", "ऐ", "ओ", "औ"] },
+    { id: "u8", title: "Romanized Unicode: Vowels: अ आ इ ई (Shift+H Shift+A [ Shift+[)", description: "Primary Vowels.", generator: "progressive", targetChars: ["अ", "आ", "इ", "ई"] },
+    { id: "u9", title: "Romanized Unicode: Vowels: उ ऊ ऋ (f Shift+F Shift+Z)", description: "Secondary Vowels.", generator: "progressive", targetChars: ["उ", "ऊ", "ऋ"] },
+    { id: "u10", title: "Romanized Unicode: Vowels: ए ऐ ओ औ (] Shift+] Shift+O Shift+W)", description: "Diphthongs.", generator: "progressive", targetChars: ["ए", "ऐ", "ओ", "औ"] },
 
     // MATRAS (Vowel Signs)
-    { id: "u11", title: "Unicode: Matras: ा ि ी (a i Shift+I)", description: "Aa, i, ii matras.", generator: "progressive", targetChars: ["ा", "ि", "ी"] },
-    { id: "u12", title: "Unicode: Matras: ु ू ृ (u Shift+U Shift+R)", description: "u, uu, ri matras.", generator: "progressive", targetChars: ["ु", "ू", "ृ"] },
-    { id: "u13", title: "Unicode: Matras: े ै ो ौ (e Shift+E o w)", description: "e, ai, o, au matras.", generator: "progressive", targetChars: ["े", "ै", "ो", "ौ"] },
+    { id: "u11", title: "Romanized Unicode: Matras: का कि की (ka ki Shift+I)", description: "Practice aa, i, ii matras with 'ka'.", generator: "progressive", targetChars: ["का", "कि", "की"] },
+    { id: "u12", title: "Romanized Unicode: Matras: कु कू कृ (ku Shift+U Shift+R)", description: "Practice u, uu, ri matras with 'ka'.", generator: "progressive", targetChars: ["कु", "कू", "कृ"] },
+    { id: "u13", title: "Romanized Unicode: Matras: के कै को कौ (ke Shift+E ko kw)", description: "Practice e, ai, o, au matras with 'ka'.", generator: "progressive", targetChars: ["के", "कै", "को", "कौ"] },
 
     // MODIFIERS & NASALS
-    { id: "u14", title: "Unicode: Modifiers: ं ः ँ ् ़ (Shift+M Shift+; Shift+V / Shift+.)", description: "Nasal, visarga, candrabindu, halant, nukta.", generator: "progressive", targetChars: ["ं", "ः", "ँ", "्", "़"] },
+    { id: "u14", title: "Romanized Unicode: Modifiers: कं कः कँ क् क़ (kM k: kV k/ k.)", description: "Practice nasal, visarga, candrabindu, halant, and nukta with 'ka'.", generator: "progressive", targetChars: ["कं", "कः", "कँ", "क्", "क़"] },
 
     // EXPLICIT HALF LETTERS
-    { id: "u15", title: "Unicode: Half Letters: ष् ञ् फ् ण् झ् क् (z+/ Shift+Y+/ Shift+P+/ Shift+N+/ Shift+J+/ \\)", description: "Explicit half letters. Note: क् has a dedicated key (\\).", generator: "progressive", targetChars: ["ष्", "ञ्", "फ्", "ण्", "झ्", "क्"] },
+    { id: "u15", title: "Romanized Unicode: Half Letters: ष् ञ् फ् ण् झ् क् (z+/ Shift+Y+/ Shift+P+/ Shift+N+/ Shift+J+/ \\)", description: "Explicit half letters. Note: क् has a dedicated key (\\).", generator: "progressive", targetChars: ["ष्", "ञ्", "फ्", "ण्", "झ्", "क्"] },
 
     // CONJUNCTS
-    { id: "u16", title: "Unicode: Conjuncts 1: क्ष त्र ज्ञ क्र र्क (k+/+z t+/+r u k+/+r r+/+k)", description: "Common Conjuncts.", generator: "progressive", targetChars: ["क्ष", "त्र", "ज्ञ", "क्र", "र्क"] },
-    { id: "u17", title: "Unicode: Conjuncts 2: र्य ट्र श्र रु त्त (r+/+/=/y q+/+r Shift+S+/+r ru t+/+t)", description: "Advanced Conjuncts.", generator: "progressive", targetChars: ["र्य", "ट्र", "श्र", "रु", "त्त"] },
-    { id: "u18", title: "Unicode: Conjuncts 3: ट्ट ट्ठ ठ्ठ ङ्ग ङ्क (q+/+q q+/+Shift+Q Shift+Q+/+Shift+Q Shift+<+/+g Shift+<+/+k)", description: "Complex Combinations.", generator: "progressive", targetChars: ["ट्ट", "ट्ठ", "ठ्ठ", "ङ्ग", "ङ्क"] },
-    { id: "u19", title: "Unicode: Conjuncts 4: द्ध द्व द्द क्क डड्ड ॐ (d+/+Shift+D d+/+v d+/+d k+/+k x+/+x Alt+2384)", description: "Special Conjuncts.", generator: "progressive", targetChars: ["द्ध", "द्व", "द्द", "क्क", "ड्ड", "ॐ"] },
+    { id: "u16", title: "Romanized Unicode: Conjuncts 1: क्ष त्र ज्ञ क्र र्क (k+/+z t+/+r u k+/+r r+/+k)", description: "Common Conjuncts.", generator: "progressive", targetChars: ["क्ष", "त्र", "ज्ञ", "क्र", "र्क"] },
+    { id: "u17", title: "Romanized Unicode: Conjuncts 2: र्य ट्र श्र रु त्त (r+/+/=/y q+/+r Shift+S+/+r ru t+/+t)", description: "Advanced Conjuncts.", generator: "progressive", targetChars: ["र्य", "ट्र", "श्र", "रु", "त्त"] },
+    { id: "u18", title: "Romanized Unicode: Conjuncts 3: ट्ट ट्ठ ठ्ठ ङ्ग ङ्क (q+/+q q+/+Shift+Q Shift+Q+/+Shift+Q Shift+<+/+g Shift+<+/+k)", description: "Complex Combinations.", generator: "progressive", targetChars: ["ट्ट", "ट्ठ", "ठ्ठ", "ङ्ग", "ङ्क"] },
+    { id: "u19", title: "Romanized Unicode: Conjuncts 4: द्ध द्व द्द क्क डड्ड ॐ (d+/+Shift+D d+/+v d+/+d k+/+k x+/+x Alt+2384)", description: "Special Conjuncts.", generator: "progressive", targetChars: ["द्ध", "द्व", "द्द", "क्क", "ड्ड", "ॐ"] },
 
     // NUMBERS & PUNCTUATION
-    { id: "u20", title: "Unicode: Basic Punctuation: । , . ? ! ; (. , Shift+> Shift+/ Shift+1 ;)", description: "Standard Nepali punctuation marks.", generator: "progressive", targetChars: ["।", ",", ".", "?", "!", ";"] },
-    { id: "u21", title: "Unicode: Brackets & Quotes: ( ) \" ' (Shift+9 Shift+0 Shift+' ')", description: "Brackets and quotation marks.", generator: "progressive", targetChars: ["(", ")", "\"", "'"] },
-    { id: "u22", title: "Unicode: Symbols & Math: % + = - / (Shift+5 Alt+43 Alt+61 - Alt+47)", description: "Mathematical and special symbols.", generator: "progressive", targetChars: ["%", "+", "=", "-", "/"] },
-    { id: "u23", title: "Unicode: Numbers: ० १ २ ३ ४ ५ ६ ७ ८ ९ (0 1 2 3 4 5 6 7 8 9)", description: "Nepali numbers.", generator: "progressive", targetChars: ["०", "१", "२", "३", "४", "५", "६", "७", "८", "९"] },
+    { id: "u20", title: "Romanized Unicode: Basic Punctuation: । , . ? ! ; (. , Shift+> Shift+/ Shift+1 ;)", description: "Standard Nepali punctuation marks.", generator: "progressive", targetChars: ["।", ",", ".", "?", "!", ";"] },
+    { id: "u21", title: "Romanized Unicode: Brackets & Quotes: ( ) \" ' (Shift+9 Shift+0 Shift+' ')", description: "Brackets and quotation marks.", generator: "progressive", targetChars: ["(", ")", "\"", "'"] },
+    { id: "u22", title: "Romanized Unicode: Symbols & Math: % + = - / (Shift+5 Alt+43 Alt+61 - Alt+47)", description: "Mathematical and special symbols.", generator: "progressive", targetChars: ["%", "+", "=", "-", "/"] },
+    { id: "u23", title: "Romanized Unicode: Numbers: ० १ २ ३ ४ ५ ६ ७ ८ ९ (0 1 2 3 4 5 6 7 8 9)", description: "Nepali numbers.", generator: "progressive", targetChars: ["०", "१", "२", "३", "४", "५", "६", "७", "८", "९"] },
 
     // MASTERY WORDS AND SENTENCES
-    { id: "u24", title: "Unicode: Practice: Beginner Words", description: "Simple words.", generator: "bank", wordBank: NP_WORDS_EASY },
-    { id: "u25", title: "Unicode: Practice: Intermediate Words", description: "Medium difficulty words.", generator: "bank", wordBank: NP_WORDS_MED },
-    { id: "u26", title: "Unicode: Practice: Advanced Words", description: "Professional vocabulary.", generator: "bank", wordBank: NP_WORDS_ADV },
-    { id: "u27", title: "Unicode: Mastery: Easy Sentences", description: "Daily communication.", generator: "bank", wordBank: NP_SENT_EASY },
-    { id: "u28", title: "Unicode: Mastery: Complex Sentences", description: "Advanced phrasing.", generator: "bank", wordBank: NP_SENT_MED },
-    { id: "u29", title: "Unicode: Professional Mastery: Official Text", description: "Constitutional text.", generator: "bank", wordBank: NP_SENT_ADV }
+    { id: "u24", title: "Romanized Unicode: Practice: Beginner Words", description: "Simple words.", generator: "bank", wordBank: NP_WORDS_EASY },
+    { id: "u25", title: "Romanized Unicode: Practice: Intermediate Words", description: "Medium difficulty words.", generator: "bank", wordBank: NP_WORDS_MED },
+    { id: "u26", title: "Romanized Unicode: Practice: Advanced Words", description: "Professional vocabulary.", generator: "bank", wordBank: NP_WORDS_ADV },
+    { id: "u27", title: "Romanized Unicode: Mastery: Easy Sentences", description: "Daily communication.", generator: "bank", wordBank: NP_SENT_EASY },
+    { id: "u28", title: "Romanized Unicode: Mastery: Complex Sentences", description: "Advanced phrasing.", generator: "bank", wordBank: NP_SENT_MED },
+    { id: "u29", title: "Romanized Unicode: Professional Mastery: Official Text", description: "Constitutional text.", generator: "bank", wordBank: NP_SENT_ADV }
   ]
 };
