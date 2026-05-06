@@ -2,6 +2,20 @@
  * Progressive Text Generator — Scaffolded Learning Engine
  */
 
+// Halant (virama) character — if a Nepali char ends with this, it is a half-letter.
+// Concatenating half-letters forms conjunct grapheme clusters that the splitter
+// treats as a single character, so we always space them out.
+const HALANT = '\u094D';
+
+const isHalfLetter = (char) => char.endsWith(HALANT);
+
+const joinNepali = (a, b) => {
+  // Always separate if either char is non-Nepali, or if either ends in halant
+  const bothNepali = /[\u0900-\u097F]/.test(a) && /[\u0900-\u097F]/.test(b);
+  if (!bothNepali || isHalfLetter(a) || isHalfLetter(b)) return `${a} ${b}`;
+  return a + b;
+};
+
 export const generateProgressive = (chars) => {
   let sequence = [];
 
@@ -13,39 +27,28 @@ export const generateProgressive = (chars) => {
 
   // Step 2: Adjacent forward pairs
   for (let i = 0; i < chars.length - 1; i++) {
-    const char1 = chars[i];
-    const char2 = chars[i + 1];
-    // Add space between symbols/Alt-codes, but keep conjuncts joined
-    const needsSpace = !/[\u0900-\u097F]/.test(char1) || !/[\u0900-\u097F]/.test(char2);
-    const pair = needsSpace ? `${char1} ${char2}` : char1 + char2;
+    const pair = joinNepali(chars[i], chars[i + 1]);
     sequence.push(Array(3).fill(pair).join(' '));
   }
 
   // Step 3: Adjacent reverse pairs
   for (let i = 0; i < chars.length - 1; i++) {
-    const char1 = chars[i + 1];
-    const char2 = chars[i];
-    const needsSpace = !/[\u0900-\u097F]/.test(char1) || !/[\u0900-\u097F]/.test(char2);
-    const pair = needsSpace ? `${char1} ${char2}` : char1 + char2;
+    const pair = joinNepali(chars[i + 1], chars[i]);
     sequence.push(Array(3).fill(pair).join(' '));
   }
 
-  // Step 4: Random 3-character combos (form a single word)
+  // Step 4: Random 3-character combos
+  // If any char in the set is a half-letter, space them to prevent conjunct merging
+  const hasHalfLetters = chars.some(isHalfLetter);
   for (let i = 0; i < 6; i++) {
-    let word = '';
-    for (let j = 0; j < 3; j++) {
-      word += chars[Math.floor(Math.random() * chars.length)];
-    }
-    sequence.push(word);
+    const parts = Array.from({ length: 3 }, () => chars[Math.floor(Math.random() * chars.length)]);
+    sequence.push(hasHalfLetters ? parts.join(' ') : parts.join(''));
   }
 
-  // Step 5: Random 4-character combos (form a single word)
+  // Step 5: Random 4-character combos
   for (let i = 0; i < 6; i++) {
-    let word = '';
-    for (let j = 0; j < 4; j++) {
-      word += chars[Math.floor(Math.random() * chars.length)];
-    }
-    sequence.push(word);
+    const parts = Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]);
+    sequence.push(hasHalfLetters ? parts.join(' ') : parts.join(''));
   }
 
   return sequence.join(' ');

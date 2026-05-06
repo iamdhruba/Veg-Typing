@@ -466,6 +466,11 @@ const GuidedLesson = ({ level, mode, onComplete, playErrorSound }) => {
   };
 
   const renderDisplayChar = (char) => {
+    if (mode === 'unicode' || mode === 'romanized') {
+      if (char.endsWith('\u094D')) {
+        return char + '\u200D';
+      }
+    }
     if (mode !== 'preeti') return char;
     // We must translate Nepali Unicode characters AND specific logical punctuation marks that have distinct physical mappings in Preeti
     const needsTranslation = /[\u0900-\u097F]/.test(char) || "{}^‘’“”".includes(char);

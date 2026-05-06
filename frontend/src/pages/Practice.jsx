@@ -85,8 +85,13 @@ const Practice = () => {
 
 
 
-  const renderSmartTitle = useMemo(() => (title) => {
-    if (mode === 'english') return title;
+  const renderSmartTitle = useMemo(() => (title, stripPrefix = false) => {
+    let displayTitle = title;
+    if (stripPrefix) {
+      displayTitle = title.replace(/^(Romanized Unicode|Preeti|English|All Letters):\s*/i, '');
+    }
+    
+    if (mode === 'english') return displayTitle;
 
     // Helper: render a chunk of characters in appropriate style
     const renderStyledPart = (text, key) => {
@@ -115,9 +120,11 @@ const Practice = () => {
       }
 
       if (mode === 'unicode' && isNepali) {
+        // Automatically add ZWJ to standalone half-letters in titles for proper rendering
+        const processedText = text.replace(/([\u0900-\u097F]\u094D)(?![\u0900-\u097F])/g, '$1\u200D');
         return (
           <span key={key} className="inline-block leading-none text-[0.9em] font-normal antialiased">
-            {text}
+            {processedText}
           </span>
         );
       }
@@ -127,7 +134,7 @@ const Practice = () => {
 
     return (
       <div className="inline-flex items-center flex-wrap gap-x-1">
-        {title.split(/(\(.*?\))/g).map((part, i) => {
+        {displayTitle.split(/(\(.*?\))/g).map((part, i) => {
           if (part.startsWith('(') && part.endsWith(')')) {
             return (
               <span key={i} className="text-[0.8em] font-medium text-on-background/40 tracking-tight ml-1 font-mono">
@@ -240,7 +247,7 @@ const Practice = () => {
                         </div>
                       )}
                     </div>
-                    <p className={`text-[12px] font-medium truncate tracking-tight ${isActive ? 'text-on-background' : 'text-on-background/60'}`}>{renderSmartTitle(lvl.title)}</p>
+                    <p className={`text-[12px] font-medium tracking-tight ${isActive ? 'text-on-background' : 'text-on-background/60'}`}>{renderSmartTitle(lvl.title, true)}</p>
                   </button>
                 );
               })}

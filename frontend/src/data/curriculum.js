@@ -172,13 +172,13 @@ export const CURRICULUM = {
     { id: "u14", title: "Romanized Unicode: Modifiers: कं कः कँ क् क़ (kM k: kV k/ k.)", description: "Practice nasal, visarga, candrabindu, halant, and nukta with 'ka'.", generator: "progressive", targetChars: ["कं", "कः", "कँ", "क्", "क़"] },
 
     // EXPLICIT HALF LETTERS
-    { id: "u15", title: "Romanized Unicode: Half Letters: ष् ञ् फ् ण् झ् क् (z+/ Shift+Y+/ Shift+P+/ Shift+N+/ Shift+J+/ \\)", description: "Explicit half letters. Note: क् has a dedicated key (\\).", generator: "progressive", targetChars: ["ष्", "ञ्", "फ्", "ण्", "झ्", "क्"] },
+    { id: "u15", title: "Romanized Unicode: Half Letters: ष् ञ् फ् ण् झ् क् (z+/ Shift+Y+/ Shift+P+/ Shift+N+/ Shift+J+/ k+/)", description: "Explicit half letters. Each is typed as consonant + / (halant). Example: ष् = z+/, क् = k+/.", generator: "progressive", targetChars: ["ष्", "ञ्", "फ्", "ण्", "झ्", "क्"] },
 
     // CONJUNCTS
-    { id: "u16", title: "Romanized Unicode: Conjuncts 1: क्ष त्र ज्ञ क्र र्क (k+/+z t+/+r u k+/+r r+/+k)", description: "Common Conjuncts.", generator: "progressive", targetChars: ["क्ष", "त्र", "ज्ञ", "क्र", "र्क"] },
+    { id: "u16", title: "Romanized Unicode: Conjuncts 1: क्ष त्र ज्ञ क्र र्क (k+/+z t+/+r j+/+Shift+Y k+/+r r+/+k)", description: "Common Conjuncts.", generator: "progressive", targetChars: ["क्ष", "त्र", "ज्ञ", "क्र", "र्क"] },
     { id: "u17", title: "Romanized Unicode: Conjuncts 2: र्य ट्र श्र रु त्त (r+/+/=/y q+/+r Shift+S+/+r ru t+/+t)", description: "Advanced Conjuncts.", generator: "progressive", targetChars: ["र्य", "ट्र", "श्र", "रु", "त्त"] },
     { id: "u18", title: "Romanized Unicode: Conjuncts 3: ट्ट ट्ठ ठ्ठ ङ्ग ङ्क (q+/+q q+/+Shift+Q Shift+Q+/+Shift+Q Shift+<+/+g Shift+<+/+k)", description: "Complex Combinations.", generator: "progressive", targetChars: ["ट्ट", "ट्ठ", "ठ्ठ", "ङ्ग", "ङ्क"] },
-    { id: "u19", title: "Romanized Unicode: Conjuncts 4: द्ध द्व द्द क्क डड्ड ॐ (d+/+Shift+D d+/+v d+/+d k+/+k x+/+x Alt+2384)", description: "Special Conjuncts.", generator: "progressive", targetChars: ["द्ध", "द्व", "द्द", "क्क", "ड्ड", "ॐ"] },
+    { id: "u19", title: "Romanized Unicode: Conjuncts 4: द्ध द्व द्द क्क ड्ड ॐ (d+/+Shift+D d+/+v d+/+d k+/+k x+/+x Alt+2384)", description: "Special Conjuncts.", generator: "progressive", targetChars: ["द्ध", "द्व", "द्द", "क्क", "ड्ड", "ॐ"] },
 
     // NUMBERS & PUNCTUATION
     { id: "u20", title: "Romanized Unicode: Basic Punctuation: । , . ? ! ; (. , Shift+> Shift+/ Shift+1 ;)", description: "Standard Nepali punctuation marks.", generator: "progressive", targetChars: ["।", ",", ".", "?", "!", ";"] },

@@ -31,9 +31,11 @@ export const UNICODE_FULL_REF = {
     { n: 'ॐ', e: 'Alt+2384' }
   ],
   "Complex Symbols": [
-    { n: 'क्ष', e: 'k+/+z' }, { n: 'त्र', e: 't+/+r' }, { n: 'ज्ञ', e: 'g+/+y' },
+    { n: 'क्ष', e: 'k+/+z' }, { n: 'त्र', e: 't+/+r' }, { n: 'ज्ञ', e: 'j+/+Shift+Y' },
     { n: 'श्र', e: 'Shift+S+/+r' }, { n: 'त्त', e: 't+/+t' }, { n: 'द्ध', e: 'd+/+Shift+D' },
-    { n: 'द्द', e: 'd+/+d' }, { n: 'क्त', e: 'k+/+t' }, { n: 'क्र', e: 'k+/+r' },
+    { n: 'द्द', e: 'd+/+d' }, { n: 'द्व', e: 'd+/+v' },
+    { n: 'क्त', e: 'k+/+t' }, { n: 'क्र', e: 'k+/+r' }, { n: 'क्क', e: 'k+/+k' },
+    { n: 'ड्ड', e: 'x+/+x' },
     { n: 'रु', e: 'r+u' }, { n: 'रू', e: 'r+Shift+U' }
   ],
   "Digits & Punctuation": [
